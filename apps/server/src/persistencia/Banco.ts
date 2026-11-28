@@ -25,6 +25,7 @@ import Migracao0002 from "./migracoes/0002_ProblemasDasTentativas.ts";
 import Migracao0003 from "./migracoes/0003_ArquivoAcompanhado.ts";
 import Migracao0004 from "./migracoes/0004_ConversaAoLado.ts";
 import Migracao0005 from "./migracoes/0005_AtividadesEContinuacao.ts";
+import Migracao0006 from "./migracoes/0006_VocabularioRevisaoPpc.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
@@ -42,6 +43,7 @@ export const MIGRACOES: ReadonlyArray<EntradaMigracao> = [
   [3, "ArquivoAcompanhado", Migracao0003],
   [4, "ConversaAoLado", Migracao0004],
   [5, "AtividadesEContinuacao", Migracao0005],
+  [6, "VocabularioRevisaoPpc", Migracao0006],
 ];
 
 const loader = Migrator.fromRecord(

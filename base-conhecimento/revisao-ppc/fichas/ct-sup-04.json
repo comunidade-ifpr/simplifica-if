@@ -2,15 +2,14 @@
   "id": "CT-SUP-04",
   "titulo": "Inclusão e acessibilidade na política de atendimento",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: trecho de AEE e acessibilidade na política de atendimento."
   },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Inclusão, acessibilidade e AEE na política de atendimento",
     "AEE, acessibilidade e inclusão",
@@ -62,9 +61,9 @@
   "escalonar_quando": "Escalonar se houver menções pontuais, mas sem definição institucional suficiente.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

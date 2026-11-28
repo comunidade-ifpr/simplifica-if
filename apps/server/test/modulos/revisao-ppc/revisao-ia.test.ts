@@ -101,7 +101,7 @@ const fichasDo = (pedido: string) =>
 
 const resultado = (ficha: string, extra: object = {}) => ({
   ficha_id: ficha,
-  estado: "ATENDE",
+  estado: "atende",
   confianca: 0.9,
   justificativa: "O PPC trata o critério.",
   lacunas: [],
@@ -118,7 +118,7 @@ const respostaValida = (pedido: string, alterar: (ficha: string) => object = () 
     resultados: fichasDo(pedido).map((f) =>
       resultado(f, { evidencias: [{ trecho: trechoDoPedido(pedido, f) }], ...alterar(f) }),
     ),
-    ...(blocoDo(pedido).startsWith("j-") ? { resumo: "A matriz tem dois componentes." } : {}),
+    ...(blocoDo(pedido).startsWith("tematico-") ? { resumo: "A matriz tem dois componentes." } : {}),
   });
 
 const roteiro: Roteiro = { responder: (p) => ({ texto: respostaValida(p) }), configs: [], pedidos: [], mensagens: [] };
@@ -247,7 +247,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         texto: respostaValida(p, (f) =>
           f === "CT-CURR-12"
             ? {
-                estado: "NAO_ATENDE",
+                estado: "nao_atende",
                 lacunas: ["a matriz não mostra a carga por núcleo"],
                 o_que_fazer: "Mostre a carga por núcleo",
               }
@@ -259,10 +259,10 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       assert.deepStrictEqual(
         preparada.blocos.map((b) => [b.id, b.tipo, b.fichas]),
         [
-          ["s-01-1", "S", 1],
-          ["s-02-1", "S", 1],
-          ["j-02", "J", 2],
-          ["t", "T", 1],
+          ["focal-01-1", "focal", 1],
+          ["focal-02-1", "focal", 1],
+          ["tematico-02", "tematico", 2],
+          ["transversal", "transversal", 1],
         ],
       );
       assert.isAbove(preparada.estimativa.tokensEntrada, 1000);
@@ -304,9 +304,9 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         const bloco = blocoDo(p);
         // S da identificação: JSON inválido, depois válido.
         const nova = p.includes("não passou na conferência automática");
-        if (bloco === "s-01-1") return { texto: !nova ? "Aqui está: {quebrado" : respostaValida(p) };
+        if (bloco === "focal-01-1") return { texto: !nova ? "Aqui está: {quebrado" : respostaValida(p) };
         // J da matriz: CT-CURR-12 com trecho inventado e CT-CURR-19 com norma fora do contexto, duas vezes.
-        if (bloco === "j-02")
+        if (bloco === "tematico-02")
           return {
             texto: respostaValida(p, (f) =>
               f === "CT-CURR-12"
@@ -322,10 +322,10 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const correcoes = roteiro.mensagens.filter((m) => m.includes("não passou na conferência automática"));
       assert.strictEqual(correcoes.length, 2);
       assert.include(correcoes[0]!, "não é um objeto JSON válido");
-      assert.include(correcoes[0]!, '"bloco":"s-01-1"');
+      assert.include(correcoes[0]!, '"bloco":"focal-01-1"');
       assert.strictEqual(roteiro.mensagens.length, roteiro.configs.length);
-      assert.strictEqual(final.blocos.find((b) => b.id === "s-01-1")!.naoConferidas, 0);
-      assert.strictEqual(final.blocos.find((b) => b.id === "j-02")!.naoConferidas, 2);
+      assert.strictEqual(final.blocos.find((b) => b.id === "focal-01-1")!.naoConferidas, 0);
+      assert.strictEqual(final.blocos.find((b) => b.id === "tematico-02")!.naoConferidas, 2);
       const r = final.resultado!;
       const inventado = pendencias.find((p) => p.ficha === "CT-CURR-12")!;
       assert.strictEqual(inventado.estado, "a_conferir");
@@ -341,7 +341,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         const sql = yield* SqlClient.SqlClient;
         return yield* sql<{ bloco_id: string; numero: number; problemas: string | null }>`
           SELECT bloco_id, numero, problemas FROM revisao_ppc_tentativas_ia
-          WHERE revisao_id = ${final.id} AND bloco_id IN ('s-01-1', 'j-02') ORDER BY bloco_id, numero
+          WHERE revisao_id = ${final.id} AND bloco_id IN ('focal-01-1', 'tematico-02') ORDER BY bloco_id, numero
         `;
       }).pipe(Effect.provide(NodeSqliteClient.layer({ filename: bancoConversas })));
       const problemas = (bloco: string, numero: number) =>
@@ -349,11 +349,11 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
           string,
           string[]
         >;
-      assert.include(problemas("s-01-1", 1)["*"]!.join(), "não é um objeto JSON válido");
-      assert.deepStrictEqual(problemas("s-01-1", 2), {});
-      assert.hasAllKeys(problemas("j-02", 1), ["CT-CURR-12", "CT-CURR-19"]);
-      assert.hasAllKeys(problemas("j-02", 2), ["CT-CURR-12", "CT-CURR-19"]);
-      assert.notInclude(JSON.stringify(problemas("j-02", 1)), "aprovado pela PROENS");
+      assert.include(problemas("focal-01-1", 1)["*"]!.join(), "não é um objeto JSON válido");
+      assert.deepStrictEqual(problemas("focal-01-1", 2), {});
+      assert.hasAllKeys(problemas("tematico-02", 1), ["CT-CURR-12", "CT-CURR-19"]);
+      assert.hasAllKeys(problemas("tematico-02", 2), ["CT-CURR-12", "CT-CURR-19"]);
+      assert.notInclude(JSON.stringify(problemas("tematico-02", 1)), "aprovado pela PROENS");
     }),
   );
 
@@ -379,7 +379,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
     Effect.gen(function* () {
       reiniciar();
       roteiro.responder = (p) =>
-        blocoDo(p) === "j-02"
+        blocoDo(p) === "tematico-02"
           ? { erro: "API Error: 429 rate_limit_error: This request would exceed your account's rate limit." }
           : { texto: respostaValida(p) };
       const { rpc, pre, preparada, final, ate } = yield* rodar(gravar("PPC D.docx", ppcSintetico()));
@@ -392,7 +392,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         final.blocos.map((b) => b.estado),
         ["pronto", "pronto", "pendente", "pendente"],
       );
-      assert.strictEqual(final.blocoPausado, "j-02");
+      assert.strictEqual(final.blocoPausado, "tematico-02");
       // Os blocos prontos já estão na lista da pré-conferência, a mesma, como leitura parcial.
       const parcial = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista });
       assert.strictEqual(parcial.revisao, preparada.id);
@@ -412,7 +412,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const retomada = yield* ate(preparada.id);
       assert.strictEqual(retomada.situacao, "concluida");
       assert.isNull(retomada.blocoPausado);
-      assert.deepStrictEqual(roteiro.pedidos.slice(antes).map(blocoDo), ["j-02", "t"]);
+      assert.deepStrictEqual(roteiro.pedidos.slice(antes).map(blocoDo), ["tematico-02", "transversal"]);
       assert.strictEqual(retomada.resultado!.conferidosIa, 5);
       // A conclusão na mesma lista, completa.
       assert.strictEqual(retomada.lista, pre.lista);
@@ -427,9 +427,9 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
     () =>
       Effect.gen(function* () {
         reiniciar();
-        const naoAtende = () => ({ estado: "NAO_ATENDE", lacunas: ["falta o item"], o_que_fazer: "Inclua o item" });
+        const naoAtende = () => ({ estado: "nao_atende", lacunas: ["falta o item"], o_que_fazer: "Inclua o item" });
         roteiro.responder = (p) =>
-          blocoDo(p) === "j-02"
+          blocoDo(p) === "tematico-02"
             ? { erro: "You've hit your usage limit. Try again later." }
             : { texto: respostaValida(p, naoAtende) };
         const { rpc, pre, preparada, final, ate } = yield* rodar(gravar("PPC cota.docx", ppcSintetico()));
@@ -453,7 +453,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         assert.strictEqual(continuada.provider, "antigravity");
         const fim = yield* ate(preparada.id);
         assert.strictEqual(fim.situacao, "concluida");
-        assert.deepStrictEqual(roteiro.pedidos.slice(antes).map(blocoDo), ["j-02", "t"]);
+        assert.deepStrictEqual(roteiro.pedidos.slice(antes).map(blocoDo), ["tematico-02", "transversal"]);
         assert.isTrue(roteiro.configs.slice(configsAntes).every((config) => config.provider === "antigravity"));
 
         const lista = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista });
@@ -478,7 +478,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
     Effect.gen(function* () {
       reiniciar();
       roteiro.responder = (p) =>
-        blocoDo(p) === "j-02" ? { erro: "API Error: 503 Service Unavailable" } : { texto: respostaValida(p) };
+        blocoDo(p) === "tematico-02" ? { erro: "API Error: 503 Service Unavailable" } : { texto: respostaValida(p) };
       const { final } = yield* rodar(gravar("PPC D2.docx", ppcSintetico()));
       assert.strictEqual(final.situacao, "pausada");
       // Fora do ar não é o limite da assinatura: não oferece outra IA.
@@ -493,7 +493,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
     Effect.gen(function* () {
       reiniciar();
       roteiro.responder = (p) =>
-        blocoDo(p) === "j-02"
+        blocoDo(p) === "tematico-02"
           ? { falha: new Error("proxy http://joao:s3nh4@10.0.0.1:3128 respondeu algo estranho") }
           : { texto: respostaValida(p) };
       const { final } = yield* rodar(gravar("PPC D3.docx", ppcSintetico()));
@@ -510,13 +510,15 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       Effect.gen(function* () {
         reiniciar();
         roteiro.responder = (p) =>
-          blocoDo(p) === "s-01-1" ? { texto: respostaValida(p), ferramenta: "shell" } : { texto: respostaValida(p) };
+          blocoDo(p) === "focal-01-1"
+            ? { texto: respostaValida(p), ferramenta: "shell" }
+            : { texto: respostaValida(p) };
         const { final, pendencias } = yield* rodar(gravar("PPC E.docx", ppcSintetico()));
         assert.strictEqual(final.situacao, "concluida");
-        const bloco = final.blocos.find((b) => b.id === "s-01-1")!;
+        const bloco = final.blocos.find((b) => b.id === "focal-01-1")!;
         assert.strictEqual(bloco.naoConferidas, 1);
         // Sem nova tentativa: uma ferramenta não é erro de formato.
-        assert.strictEqual(roteiro.pedidos.filter((p) => blocoDo(p) === "s-01-1").length, 1);
+        assert.strictEqual(roteiro.pedidos.filter((p) => blocoDo(p) === "focal-01-1").length, 1);
         const r = final.resultado!;
         assert.include(pendencias.find((p) => p.ficha === "CT-IDENT-02")!.titulo, "tentou usar uma ferramenta");
         assert.strictEqual(r.paraConferirIa, 1);
@@ -556,15 +558,15 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       reiniciar();
       // O resumo do tema J é "A matriz tem dois componentes."; a transversal o cita como evidência.
       roteiro.responder = (p) =>
-        blocoDo(p) === "t"
+        blocoDo(p) === "transversal"
           ? { texto: respostaValida(p, () => ({ evidencias: [{ trecho: "A matriz tem dois componentes." }] })) }
           : { texto: respostaValida(p) };
       const { final, pendencias } = yield* rodar(gravar("PPC G.docx", ppcSintetico()));
       assert.include(
-        roteiro.pedidos.find((p) => blocoDo(p) === "t")!,
+        roteiro.pedidos.find((p) => blocoDo(p) === "transversal")!,
         "A matriz tem dois componentes.",
       );
-      const t = final.blocos.find((b) => b.id === "t")!;
+      const t = final.blocos.find((b) => b.id === "transversal")!;
       assert.strictEqual(t.naoConferidas, 1);
       const pendencia = pendencias.find((p) => p.ficha === "CT-TRANS-03")!;
       assert.include(pendencia.titulo, "a IA citou um trecho que não está no documento");
@@ -576,9 +578,9 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       Effect.gen(function* () {
         reiniciar();
         roteiro.responder = (p) =>
-          blocoDo(p) === "j-02"
+          blocoDo(p) === "tematico-02"
             ? { erro: "API Error: 429 rate_limit_error: This request would exceed your account's rate limit." }
-            : { texto: respostaValida(p, (f) => (f === "CT-IDENT-02" ? { estado: "NAO_ATENDE" } : {})) };
+            : { texto: respostaValida(p, (f) => (f === "CT-IDENT-02" ? { estado: "nao_atende" } : {})) };
         const arquivo = gravar("PPC H.docx", ppcSintetico());
         const { rpc, pre, preparada, final } = yield* rodar(arquivo);
         assert.strictEqual(final.situacao, "pausada");
@@ -604,7 +606,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
     Effect.gen(function* () {
       reiniciar();
       roteiro.responder = (p) =>
-        blocoDo(p) === "j-02"
+        blocoDo(p) === "tematico-02"
           ? { erro: "API Error: 429 rate_limit_error: This request would exceed your account's rate limit." }
           : { texto: respostaValida(p) };
       const { rpc, pre, preparada, final } = yield* rodar(gravar("PPC I.docx", ppcSintetico()));
@@ -678,7 +680,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
     Effect.gen(function* () {
       reiniciar();
       roteiro.responder = (p) =>
-        blocoDo(p) === "j-02"
+        blocoDo(p) === "tematico-02"
           ? { erro: "API Error: 429 rate_limit_error: This request would exceed your account's rate limit." }
           : { texto: respostaValida(p) };
       const { rpc, pre, preparada, final } = yield* rodar(gravar("PPC J.docx", ppcSintetico()));
@@ -725,9 +727,9 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
         const portao = yield* Deferred.make<void>();
         // s-01-1 recebe texto e espera o portão; s-02-1 cai com um erro que não é limite.
         roteiro.responder = (p) =>
-          blocoDo(p) === "s-01-1"
+          blocoDo(p) === "focal-01-1"
             ? { texto: respostaValida(p), esperar: Deferred.await(portao) }
-            : blocoDo(p) === "s-02-1"
+            : blocoDo(p) === "focal-02-1"
               ? { erro: "a conexão com o serviço caiu sem explicação" }
               : { texto: respostaValida(p) };
         const { urlRpc } = yield* Servidor.ServidorApp;
@@ -745,14 +747,14 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
         const durante = (yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
           Stream.filter(
             (e) =>
-              bloco(e, "s-01-1").etapa === "recebendo" &&
-              bloco(e, "s-02-1").estado === "pendente" &&
-              roteiro.pedidos.some((p) => blocoDo(p) === "s-02-1"),
+              bloco(e, "focal-01-1").etapa === "recebendo" &&
+              bloco(e, "focal-02-1").estado === "pendente" &&
+              roteiro.pedidos.some((p) => blocoDo(p) === "focal-02-1"),
           ),
           Stream.take(1),
           Stream.runCollect,
         ))[0]!;
-        const lendo = bloco(durante, "s-01-1");
+        const lendo = bloco(durante, "focal-01-1");
         assert.strictEqual(lendo.estado, "em_andamento");
         assert.isString(lendo.iniciadoEm);
         assert.isString(lendo.ultimaAtividadeEm);
@@ -772,19 +774,19 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
         ))[0]!;
         assert.strictEqual(final.situacao, "pausada");
         assert.isFalse(final.limite);
-        assert.strictEqual(final.blocoPausado, "s-02-1");
+        assert.strictEqual(final.blocoPausado, "focal-02-1");
         // O irmão terminou e ficou gravado; nada novo começou depois da falha.
         assert.deepStrictEqual(
           final.blocos.map((b) => [b.id, b.estado]),
           [
-            ["s-01-1", "pronto"],
-            ["s-02-1", "pendente"],
-            ["j-02", "pendente"],
-            ["t", "pendente"],
+            ["focal-01-1", "pronto"],
+            ["focal-02-1", "pendente"],
+            ["tematico-02", "pendente"],
+            ["transversal", "pendente"],
           ],
         );
-        assert.isNull(bloco(final, "s-01-1").etapa);
-        assert.notInclude(roteiro.pedidos.map(blocoDo), "j-02");
+        assert.isNull(bloco(final, "focal-01-1").etapa);
+        assert.notInclude(roteiro.pedidos.map(blocoDo), "tematico-02");
         const lista = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista });
         assert.strictEqual(lista.resultado.conferidosIa, 1);
       }),
@@ -816,7 +818,7 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
       reiniciar();
       const portao = yield* Deferred.make<void>();
       roteiro.responder = (p) =>
-        blocoDo(p) === "s-01-1"
+        blocoDo(p) === "focal-01-1"
           ? { erro: "falha no segundo bloco", esperar: Deferred.await(portao) }
           : { erro: "falha no primeiro bloco" };
       const { urlRpc } = yield* Servidor.ServidorApp;
@@ -829,8 +831,8 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
       yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
         Stream.filter(
           (e) =>
-            e.blocos.find((b) => b.id === "s-02-1")?.estado === "pendente" &&
-            roteiro.pedidos.some((p) => blocoDo(p) === "s-02-1"),
+            e.blocos.find((b) => b.id === "focal-02-1")?.estado === "pendente" &&
+            roteiro.pedidos.some((p) => blocoDo(p) === "focal-02-1"),
         ),
         Stream.take(1),
         Stream.runCollect,
@@ -842,7 +844,7 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
         Stream.runCollect,
       ))[0]!;
       assert.strictEqual(final.situacao, "pausada");
-      assert.strictEqual(final.blocoPausado, "s-02-1");
+      assert.strictEqual(final.blocoPausado, "focal-02-1");
       assert.include(final.motivo ?? "", "falha no primeiro bloco");
     }),
   );
@@ -876,7 +878,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
         // 1ª execução: completa o 1º bloco e trava no 2º bloco; fecha o servidor no meio.
         const portao = yield* Deferred.make<void>();
         roteiro.responder = (p) =>
-          blocoDo(p) === "s-02-1"
+          blocoDo(p) === "focal-02-1"
             ? { texto: respostaValida(p), esperar: Deferred.await(portao) }
             : { texto: respostaValida(p) };
         let idRevisao = "";
@@ -895,8 +897,8 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
             yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
               Stream.filter(
                 (e) =>
-                  e.blocos.find((b) => b.id === "s-01-1")?.estado === "pronto" &&
-                  e.blocos.find((b) => b.id === "s-02-1")?.etapa === "recebendo",
+                  e.blocos.find((b) => b.id === "focal-01-1")?.estado === "pronto" &&
+                  e.blocos.find((b) => b.id === "focal-02-1")?.etapa === "recebendo",
               ),
               Stream.take(1),
               Stream.runDrain,
@@ -917,10 +919,10 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
             assert.deepStrictEqual(
               recuperada.blocos.map((b) => [b.id, b.estado]),
               [
-                ["s-01-1", "pronto"],
-                ["s-02-1", "pendente"],
-                ["j-02", "pendente"],
-                ["t", "pendente"],
+                ["focal-01-1", "pronto"],
+                ["focal-02-1", "pendente"],
+                ["tematico-02", "pendente"],
+                ["transversal", "pendente"],
               ],
             );
             assert.isTrue(recuperada.blocos.every((b) => b.titulosFichas.length > 0));
@@ -985,7 +987,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
       Effect.gen(function* () {
         reiniciar();
         roteiro.responder = (p) =>
-          blocoDo(p) === "j-02"
+          blocoDo(p) === "tematico-02"
             ? { erro: "You've hit your usage limit. Try again later." }
             : { texto: respostaValida(p) };
         const arquivo = gravar("PPC troca.docx", ppcSintetico());
@@ -1060,7 +1062,9 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
           // Fora do ar não é o limite: retoma com a mesma IA, sem troca.
           liberado = true;
           roteiro.responder = (p) =>
-            blocoDo(p) === "j-02" ? { erro: "API Error: 503 Service Unavailable" } : { texto: respostaValida(p) };
+            blocoDo(p) === "tematico-02"
+              ? { erro: "API Error: 503 Service Unavailable" }
+              : { texto: respostaValida(p) };
           const foraDoAr = yield* lerAtePausar(gravar("PPC troca fora do ar.docx", ppcSintetico()));
           assert.isFalse(foraDoAr.pausada.limite);
           const recusada = yield* Effect.flip(ia.continuarCom(foraDoAr.lista, "antigravity"));
@@ -1129,7 +1133,7 @@ describe("conferidorDoBloco com alvos estruturados", () => {
       "### Quadro de identificação\nCurso Técnico em Agropecuária",
     );
     const conferir = conferidorDoBloco({
-      bloco: { id: "s-02-1", tipo: "S", tema: "Matriz", ordemTema: 2, fichas: [fichaA.id, fichaB.id] },
+      bloco: { id: "focal-02-1", tipo: "focal", tema: "Matriz", ordemTema: 2, fichas: [fichaA.id, fichaB.id] },
       fichas: [fichaA, fichaB],
       alvos,
       fontes: new Set(),
@@ -1139,16 +1143,16 @@ describe("conferidorDoBloco com alvos estruturados", () => {
     // CT-CURR-12 tenta citar trecho do recorte de CT-CURR-03: recusado.
     const c = conferir(
       JSON.stringify({
-        bloco: "s-02-1",
+        bloco: "focal-02-1",
         resultados: [
           resultado(fichaA.id, {
-            estado: "NAO_ATENDE",
+            estado: "nao_atende",
             tipo_achado: "ausencia_em_secao_presente",
             lacunas: ["falta detalhar prática profissional"],
             evidencias: [{ trecho: trechoHostil }],
           }),
           resultado(fichaB.id, {
-            estado: "ATENDE",
+            estado: "atende",
             evidencias: [{ trecho: trechoHostil }],
           }),
         ],
@@ -1169,7 +1173,7 @@ describe("conferidorDoBloco com alvos estruturados", () => {
     );
     assert.isNull(alvos[fichaT.id]!.secao);
     const conferir = conferidorDoBloco({
-      bloco: { id: "t", tipo: "T", tema: "Transversais", ordemTema: 12, fichas: [fichaT.id] },
+      bloco: { id: "transversal", tipo: "transversal", tema: "Transversais", ordemTema: 12, fichas: [fichaT.id] },
       fichas: [fichaT],
       alvos,
       fontes: new Set(),
@@ -1177,10 +1181,10 @@ describe("conferidorDoBloco com alvos estruturados", () => {
     });
     const ausenciaSemSecao = conferir(
       JSON.stringify({
-        bloco: "t",
+        bloco: "transversal",
         resultados: [
           resultado(fichaT.id, {
-            estado: "NAO_ATENDE",
+            estado: "nao_atende",
             tipo_achado: "ausencia_em_secao_presente",
             lacunas: ["não há coerência entre objetivos e avaliação"],
             evidencias: [{ trecho: "Introdução geral do projeto pedagógico do campus Curitiba." }],
@@ -1193,10 +1197,10 @@ describe("conferidorDoBloco com alvos estruturados", () => {
 
     const citandoResumo = conferir(
       JSON.stringify({
-        bloco: "t",
+        bloco: "transversal",
         resultados: [
           resultado(fichaT.id, {
-            estado: "ATENDE",
+            estado: "atende",
             evidencias: [{ trecho: "Resumo do tema escrito pela IA sobre a matriz curricular." }],
           }),
         ],
@@ -1217,7 +1221,7 @@ describe("conferidorDoBloco com alvos estruturados", () => {
         nonce: "00000000",
         criterio: "ausencia",
       });
-      const blocoT = plano.blocos.find((b) => b.tipo === "T")!;
+      const blocoT = plano.blocos.find((b) => b.tipo === "transversal")!;
       assert.isDefined(blocoT);
       assert.isNull(blocoT.alvos["CT-TRANS-03"]!.secao);
       assert.include(plano.transversais!.trechos, "o código não localizou trecho com os termos deste critério");

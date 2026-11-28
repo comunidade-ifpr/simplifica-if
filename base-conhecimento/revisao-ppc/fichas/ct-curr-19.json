@@ -2,15 +2,14 @@
   "id": "CT-CURR-19",
   "titulo": "Integração curricular e práticas profissionais articuladas",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: integração teoria-prática."
   },
   "topicos_tematicos": [
     "matriz_curricular"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Integração curricular e práticas profissionais articuladas",
     "Matriz curricular, integralização e componentes",
@@ -112,9 +111,9 @@
   "escalonar_quando": "Escalonar se houver discurso de integração sem demonstrar mecanismos curriculares concretos ou se os projetos e práticas aparecerem sem vínculo claro com componentes, perfil ou ementas. Escalonar também se não ficar claro como a prática profissional supervisionada se distribui no currículo ou se ela está computada na carga horária mínima.",
   "evidencia_minima": 3,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

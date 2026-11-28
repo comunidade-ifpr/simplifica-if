@@ -2,15 +2,14 @@
   "id": "CT-SUP-14",
   "titulo": "Referências institucionais e referenciais essenciais do curso",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "CNCT, DCN da EPT (e DCNEM no integrado), PDI, PPI ou Regimento e a legislação profissional do CNCT entre as citações e menções do PPC."
   },
   "topicos_tematicos": [
     "referencias_normativas"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Referências institucionais e referenciais essenciais do curso",
     "Referências, base legal e normas institucionais",
@@ -88,9 +87,9 @@
   "escalonar_quando": "Escalonar se parte dos referenciais essenciais estiver presente, mas a suficiência institucional, setorial, profissional ou normativa atual da base documental permanecer duvidosa.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

@@ -2,9 +2,9 @@
   "id": "CT-TRANS-04",
   "titulo": "Coerência entre currículo, corpo docente e infraestrutura",
   "dominio": "transversal",
-  "criticidade": "BLOQ",
+  "criticidade": "bloqueante",
   "execucao": {
-    "modo": "J",
+    "modo": "transversal",
     "justificativa": "Julgamento transversal sobre os resumos dos temas: currículo, corpo docente e infraestrutura."
   },
   "topicos_tematicos": [
@@ -13,7 +13,6 @@
     "matriz_curricular",
     "sintese_transversal_revisao"
   ],
-  "tipo_escopo": "transversal",
   "ancoras_semanticas": [
     "Coerência entre currículo, corpo docente e infraestrutura",
     "Corpo docente, equipe técnica e gestão do curso",
@@ -79,9 +78,9 @@
   "escalonar_quando": "Escalonar se a aderência parecer provável, mas não suficientemente demonstrada.",
   "evidencia_minima": 3,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

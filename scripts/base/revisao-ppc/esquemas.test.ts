@@ -35,14 +35,13 @@ const FICHAS_INVALIDAS: Array<Mutacao<ObjetoJson & { referencias_normativas: Obj
   ["id nulo", ["$.id"], (f) => void (f.id = null)],
   ["dominio fora do enum", ["$.dominio"], (f) => void (f.dominio = "outro")],
   ["criticidade fora do enum", ["$.criticidade"], (f) => void (f.criticidade = "bloq")],
-  ["tipo_escopo fora do enum", ["$.tipo_escopo"], (f) => void (f.tipo_escopo = "geral")],
   ["execucao ausente", ["$.execucao"], (f) => void delete f.execucao],
   ["execucao com modo fora do enum", ["$.execucao.modo"], (f) => void (f.execucao = { modo: "X", justificativa: "a" })],
-  ["execucao sem justificativa", ["$.execucao.justificativa"], (f) => void (f.execucao = { modo: "D" })],
+  ["execucao sem justificativa", ["$.execucao.justificativa"], (f) => void (f.execucao = { modo: "hibrido" })],
   [
     "execucao com justificativa vazia",
     ["$.execucao.justificativa"],
-    (f) => void (f.execucao = { modo: "J", justificativa: "" }),
+    (f) => void (f.execucao = { modo: "tematico", justificativa: "" }),
   ],
   ["topicos_tematicos como texto", ["$.topicos_tematicos"], (f) => void (f.topicos_tematicos = "estagio")],
   ["item de topicos_tematicos numérico", ["$.topicos_tematicos[0]"], (f) => void (f.topicos_tematicos = [1])],
@@ -51,7 +50,7 @@ const FICHAS_INVALIDAS: Array<Mutacao<ObjetoJson & { referencias_normativas: Obj
   ["evidencia_minima negativa", ["$.evidencia_minima"], (f) => void (f.evidencia_minima = -3)],
   ["evidencia_minima fracionária", ["$.evidencia_minima"], (f) => void (f.evidencia_minima = 1.5)],
   ["evidencia_minima em texto", ["$.evidencia_minima"], (f) => void (f.evidencia_minima = "2")],
-  ["estado fora do enum", ["$.estados_permitidos[1]"], (f) => void (f.estados_permitidos = ["ATENDE", "PARCIAL"])],
+  ["estado fora do enum", ["$.estados_permitidos[1]"], (f) => void (f.estados_permitidos = ["atende", "parcial"])],
   ["escalonar_quando nulo", ["$.escalonar_quando"], (f) => void (f.escalonar_quando = null)],
   [
     "feedback_autores com campo a mais",
@@ -61,7 +60,7 @@ const FICHAS_INVALIDAS: Array<Mutacao<ObjetoJson & { referencias_normativas: Obj
   [
     "feedback_autores com estado fora do enum",
     ["$.feedback_autores.obrigatorio_quando_estado[1]"],
-    (f) => void (f.feedback_autores = { obrigatorio_quando_estado: ["ATENDE", "talvez"] }),
+    (f) => void (f.feedback_autores = { obrigatorio_quando_estado: ["atende", "talvez"] }),
   ],
   ["feedback_autores como lista", ["$.feedback_autores"], (f) => void (f.feedback_autores = [])],
   [

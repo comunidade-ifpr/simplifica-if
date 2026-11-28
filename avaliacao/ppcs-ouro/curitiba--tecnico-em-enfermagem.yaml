@@ -10,7 +10,7 @@ justificativa_escolha: >-
   oferta só presencial (art. 49, § 8º) e base legal com a DCN revogada e órgão trocado.
 achados:
   - ficha: CT-IDENT-01
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: A denominação coincide com a habilitação "Técnico em Enfermagem" do CNCT.
     evidencias:
       - trecho: Curso Técnico em Enfermagem
@@ -22,7 +22,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-13
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: O eixo declarado (Ambiente e Saúde) é o eixo do curso no CNCT.
     evidencias:
       - trecho: Ambiente e Saúde
@@ -34,7 +34,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-02
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       Carga total de 1.600 h, das quais 1.200 h teóricas e 400 h de estágio; o mínimo de 1.200 h do CNCT é
       atingido sem a carga de estágio (art. 37, § 3º). Valores coincidentes entre identificação e matriz.
@@ -52,7 +52,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-20
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       Estágio obrigatório de 400 h, acrescido às 1.200 h teóricas e igual ao teto de um terço da carga
       mínima do CNCT (art. 37, § 6º). A matriz diz "mín. 400": conferir se o PPC admite carga acima do teto.
@@ -66,7 +66,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-16
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       Exige ensino médio completo, como o CNCT para o subsequente. A idade mínima de 18 anos é requisito
       adicional, não previsto no CNCT; avaliar se é ressalva.
@@ -80,7 +80,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-08
-    estado_esperado: NAO_ATENDE
+    estado_esperado: nao_atende
     justificativa: >-
       A base legal cita como DCN da EPT a "Resolução do Conselho Nacional de Educação/CEB nº 1/2021" (órgão
       trocado; o ato é a CNE/CP nº 1/2021) e a Res. CNE/CP nº 1/2021, revogada pela Res. CNE/CP nº 2/2026,
@@ -95,7 +95,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-18
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       Seção 4.3 vincula o acompanhamento à Resolução IFPR nº 23/2021, atribui o contato à coordenação e
       descreve pesquisa com egressos sobre inserção profissional. O uso dos resultados para revisar o PPC
@@ -110,7 +110,7 @@ achados:
     status: rascunho
 
   - ficha: CT-SUP-21
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       O item 1.1.22 cita Cofen/Coren, a Lei nº 7.498/1986, o Decreto nº 94.406/1987 e a Resolução Cofen
       nº 609/2019, indicados no CNCT. Falta o Parecer Normativo nº 001/2019/COFEN.
@@ -124,7 +124,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-15
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: O diploma explicita a habilitação e o eixo tecnológico do CNCT; há também certificação intermediária de Auxiliar de Enfermagem.
     evidencias:
       - trecho: Diploma de Técnico em Enfermagem, do Eixo Tecnológico Ambiente e Saúde, após integralização dos quatro semestres do curso.
@@ -132,7 +132,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-27
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       Formato presencial declarado, sem carga a distância na matriz. É o único formato admitido para a área
       Gestão e Promoção da Saúde e Bem-Estar (art. 49, § 8º).

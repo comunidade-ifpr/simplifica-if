@@ -6,6 +6,7 @@
  * que se apoiam (link `ifpr://norma` e status de vigência) para citar.
  */
 import { partesDispositivo, textoDispositivos } from "@simplifica-if/kb/normas/texto-dispositivos";
+import { DESCRICAO_MODO_EXECUCAO } from "@simplifica-if/kb/revisao-ppc/constantes";
 import * as Schema from "effect/Schema";
 import { EsquemaLink, Fonte } from "../contratos.ts";
 import { opcional, textoAparado } from "../esquema.ts";
@@ -46,11 +47,12 @@ export const CAMPOS_CRITERIO = [
 ] as const;
 
 /** Como o app confere o critério (`execucao.modo`), em linguagem de quem revisa. */
-export const MODOS_EXECUCAO: Readonly<Record<string, string>> = {
-  D: "o app confere sozinho, sem IA",
-  S: "o app acha o trecho e a IA confirma",
-  J: "a IA julga as seções do tema",
-};
+export const MODOS_EXECUCAO: Readonly<Record<string, string>> = Object.fromEntries(
+  Object.entries(DESCRICAO_MODO_EXECUCAO).map(([modo, info]) => [
+    modo,
+    `${info.rotulo} — ${info.descricao.replace(/\.$/, "")}`,
+  ]),
+);
 
 const Referencia = Schema.Struct({
   ref: Schema.String,

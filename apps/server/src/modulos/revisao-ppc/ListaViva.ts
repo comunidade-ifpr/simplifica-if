@@ -312,7 +312,7 @@ const textoSugestao = (c: Conversa): TextoDaAcao => ({
 /** O lote de uma ficha só da nova revisão de uma pendência da IA. */
 const blocoRevisarDeNovo = (p: Pick<PendenciaRevisao, "ficha" | "tema" | "ordemTema">) => ({
   id: `revisar-de-novo-${p.ficha.toLowerCase()}`,
-  tipo: "S" as const,
+  tipo: "focal" as const,
   tema: p.tema,
   ordemTema: p.ordemTema,
   fichas: [p.ficha],

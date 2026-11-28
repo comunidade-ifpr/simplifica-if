@@ -82,7 +82,8 @@ const programa = Effect.gen(function* () {
 
   if (soBloco !== undefined) {
     const bloco = plano.blocos.find((b) => b.id === soBloco);
-    if (!bloco || bloco.tipo === "T") return yield* Effect.die(`bloco ${soBloco} não serve (use S ou J)`);
+    if (!bloco || bloco.tipo === "transversal")
+      return yield* Effect.die(`bloco ${soBloco} não serve (use focal ou tematico)`);
     const porId = new Map(plano.fichas.map((f) => [f.id, f]));
     const julgado = yield* julgarBloco({
       provider,

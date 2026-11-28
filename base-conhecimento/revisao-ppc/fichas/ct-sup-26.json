@@ -2,15 +2,14 @@
   "id": "CT-SUP-26",
   "titulo": "Progressão parcial e dependência descritas conforme a forma de oferta",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: progressão parcial e dependência × forma; a IA confirma a operacionalidade."
   },
   "topicos_tematicos": [
     "avaliacao_aprendizagem"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Progressão parcial e dependência descritas conforme a forma de oferta",
     "Avaliação do processo de ensino-aprendizagem",
@@ -58,9 +57,9 @@
   "escalonar_quando": "Escalonar quando a seção de progressão parcial tiver apenas uma remissão normativa de uma frase, quando houver dúvida sobre a forma de oferta usada para escolher a regra, quando o texto mencionar dependência sem dizer como ela será cursada, ou quando a redação tratar progressão parcial como se fosse igual para cursos integrados e subsequentes.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

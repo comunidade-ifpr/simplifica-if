@@ -2,15 +2,14 @@
   "id": "CT-SUP-23",
   "titulo": "Coordenação do curso com atribuições, regime e participação institucional explicitados",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: \"Manual de Competências\", regime de trabalho, participação (termos)."
   },
   "topicos_tematicos": [
     "corpo_docente_gestao"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Coordenação do curso com atribuições, regime e participação institucional explicitados",
     "Corpo docente, equipe técnica e gestão do curso",
@@ -56,9 +55,9 @@
   "escalonar_quando": "Escalonar se o PPC listar atribuições, mas não indicar o regime de trabalho; se mencionar o Manual de Competências sem detalhamento mínimo; se a participação em colegiados estiver apenas implícita; ou se o papel esperado da coordenação permanecer excessivamente genérico.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

@@ -100,7 +100,7 @@ describe("Compilador.compilar com erro", () => {
       // raiz só com o léxico e os tópicos: a carga das normas falha no meio da compilação, com o
       // temporário já criado
       const vazia = yield* fs.makeTempDirectoryScoped({ prefix: "kb-erro-" });
-      for (const relativo of [CAMINHOS.sinonimos, CAMINHOS.topicosSecoes]) {
+      for (const relativo of [CAMINHOS.sinonimos, CAMINHOS.topicosFichas]) {
         yield* fs.makeDirectory(path.dirname(noCheckout(vazia, relativo)), { recursive: true });
         yield* fs.copyFile(noCheckout(raizRepositorio(), relativo), noCheckout(vazia, relativo));
       }

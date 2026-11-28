@@ -34,11 +34,10 @@ export const CAMINHOS = {
   /** A base da revisão de PPC: as fichas (os critérios), a taxonomia dos tópicos e os marcos normativos. */
   revisaoPpc: REVISAO_PPC,
   fichas: `${REVISAO_PPC}/fichas`,
-  topicosFichas: `${REVISAO_PPC}/topicos-fichas.json`,
+  topicosFichas: `${REVISAO_PPC}/topicos.json`,
   marcos: `${REVISAO_PPC}/marcos-normativos.json`,
   dadosKb: DADOS_KB,
   sinonimos: `${DADOS_KB}/sinonimos.yaml`,
-  topicosSecoes: `${DADOS_KB}/topicos-secoes.yaml`,
   /** O código do núcleo que entra na impressão digital do banco. */
   codigoKb: "packages/kb/src",
   anotacoesResolvedor: "avaliacao/resolvedor/citacoes-anotadas.yaml",

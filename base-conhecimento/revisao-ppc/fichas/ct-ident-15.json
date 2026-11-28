@@ -2,15 +2,14 @@
   "id": "CT-IDENT-15",
   "titulo": "Diploma técnico explicita habilitação profissional e eixo tecnológico",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: \"Técnico em X\" e eixo na seção de diplomas; a IA confirma certificado × diploma."
   },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Diploma técnico explicita habilitação profissional e eixo tecnológico",
     "Perfil do egresso, competências e mundo do trabalho",
@@ -75,9 +74,9 @@
   "escalonar_quando": "Escalonar se o PPC menciona diploma ou certificado, mas não permite confirmar o título técnico, o eixo tecnológico ou a coerência com a denominação e a habilitação profissional do CNCT.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

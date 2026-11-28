@@ -2,15 +2,14 @@
   "id": "CT-SUP-01",
   "titulo": "Sistema de avaliação coerente com o IFPR",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: norma de avaliação do IFPR citada + escala de conceitos."
   },
   "topicos_tematicos": [
     "avaliacao_aprendizagem"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Sistema de avaliação coerente com o IFPR",
     "Avaliação do processo de ensino-aprendizagem",
@@ -54,9 +53,9 @@
   "escalonar_quando": "Escalonar se o sistema parecer parcialmente descrito ou com terminologia híbrida.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

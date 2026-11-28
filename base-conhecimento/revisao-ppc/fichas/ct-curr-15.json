@@ -2,15 +2,14 @@
   "id": "CT-CURR-15",
   "titulo": "Certificação de conhecimentos anteriores tratada, quando aplicável",
   "dominio": "curriculo",
-  "criticidade": "REC",
+  "criticidade": "recomendado",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade e trecho de certificação de conhecimentos."
   },
   "topicos_tematicos": [
     "aproveitamento_certificacao_tfc"
   ],
-  "tipo_escopo": "condicional",
   "ancoras_semanticas": [
     "Certificação de conhecimentos anteriores tratada, quando aplicável",
     "Aproveitamento, certificação intermediária e trabalho final",
@@ -53,9 +52,9 @@
   "escalonar_quando": "Escalonar se o PPC indicar certificação de conhecimentos anteriores, mas o procedimento ou a base normativa permanecerem ambíguos.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

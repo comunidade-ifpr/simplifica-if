@@ -10,7 +10,7 @@ justificativa_escolha: >-
   profissão não regulamentada, inconsistência interna de carga de estágio e base legal muito defasada.
 achados:
   - ficha: CT-IDENT-01
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: A denominação coincide com a habilitação "Técnico em Manutenção e Suporte em Informática" do CNCT.
     evidencias:
       - trecho: Curso Técnico em Manutenção e Suporte em Informática
@@ -21,7 +21,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-13
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: O eixo declarado (Informação e Comunicação) é o eixo do curso no CNCT.
     evidencias:
       - trecho: '**EIXO TECNOLÓGICO:** Informação e Comunicação'
@@ -32,7 +32,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-02
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       2.400 h (1.200 h de formação geral e 1.200 h profissionais), valor repetido na identificação e na
       organização curricular. Atende ao art. 30 da Res. CNE/CP nº 2/2026 (formação geral de no mínimo
@@ -49,7 +49,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-20
-    estado_esperado: NAO_ATENDE
+    estado_esperado: nao_atende
     justificativa: >-
       A carga do estágio obrigatório diverge: 100 h nas características do curso e 120 h no texto, no
       ementário e no regulamento anexo. A obrigatoriedade não é justificada (art. 37, § 4º).
@@ -63,7 +63,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-16
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: Exige ensino fundamental concluído, como o CNCT para o integrado à EJA, e idade mínima de 18 anos.
     evidencias:
       - trecho: aos candidatos que tenham concluído o Ensino Fundamental e tenham idade mínima de 18 (dezoito) anos
@@ -74,7 +74,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-08
-    estado_esperado: NAO_ATENDE
+    estado_esperado: nao_atende
     justificativa: >-
       Fundamenta-se na Res. CNE/CEB nº 6/2012 (revogada pela CNE/CP nº 1/2021, por sua vez revogada pela
       CNE/CP nº 2/2026) e na Res. CONSUP/IFPR nº 54/2011 (revogada pela nº 190/2024).
@@ -91,7 +91,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-18
-    estado_esperado: NAO_ATENDE
+    estado_esperado: nao_atende
     justificativa: >-
       Não há seção nem mecanismo de acompanhamento de egressos; o egresso só aparece no perfil
       profissional de conclusão (art. 28, XVIII e § 4º).
@@ -105,7 +105,7 @@ achados:
     status: rascunho
 
   - ficha: CT-SUP-21
-    estado_esperado: NAO_APLICAVEL
+    estado_esperado: nao_se_aplica
     justificativa: O CNCT registra profissão não regulamentada para a habilitação.
     evidencias:
       - trecho: Curso Técnico em Manutenção e Suporte em Informática
@@ -117,14 +117,14 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-15
-    estado_esperado: NAO_ATENDE
+    estado_esperado: nao_atende
     justificativa: O diploma explicita a habilitação, mas não o eixo tecnológico do CNCT.
     evidencias:
       - trecho: o egresso receberá o Diploma de **Técnico em Manutenção e Suporte em Informática**
     status: rascunho
 
   - ficha: CT-CURR-27
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       Formato presencial declarado, sem carga a distância na organização curricular; a EJA articulada
       admite presencial ou semipresencial (art. 49, § 7º).

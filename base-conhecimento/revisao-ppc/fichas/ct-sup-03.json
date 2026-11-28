@@ -2,15 +2,14 @@
   "id": "CT-SUP-03",
   "titulo": "Política de assistência estudantil e acompanhamento",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: trecho de assistência estudantil."
   },
   "topicos_tematicos": [
     "assistencia_estudantil_permanencia"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Política de assistência estudantil e acompanhamento",
     "Assistência estudantil, permanência e êxito",
@@ -42,9 +41,9 @@
   "escalonar_quando": "Escalonar se houver apoio descrito de forma muito abstrata ou incompleta.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

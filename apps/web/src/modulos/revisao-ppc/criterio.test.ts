@@ -7,13 +7,13 @@ import { comoConfere, nomeCriticidade, nomeDaReferencia, nomeEstadoCriterio, tex
 const ficha: FichaCriterio = {
   id: "CT-SUP-17",
   titulo: "Formação pedagógica e desenvolvimento docente previstos",
-  criticidade: "OBRIG",
+  criticidade: "obrigatorio",
   pergunta: "O PPC mostra a formação pedagógica?",
   normas: [],
   atendido: "Política de formação pedagógica.",
   naoAtendido: "Nenhuma menção.",
   aConferir: "Remissão genérica demais.",
-  modo: "J",
+  modo: "tematico",
   justificativa: null,
   secoes: ["Corpo docente", "Gestão do curso"],
   nestePpc: { estado: "a_conferir", mensagem: "", pendencia: null },
@@ -21,18 +21,21 @@ const ficha: FichaCriterio = {
 
 describe("a ficha do critério em linguagem de quem revisa", () => {
   test("como o app confere, pelo modo", () => {
-    expect(comoConfere({ modo: "D", secoes: [] })).toBe("o app confere sozinho, sem IA.");
-    expect(comoConfere({ modo: "S", secoes: ["X"] })).toBe(
-      "o app acha o trecho no PPC, e a IA confirma o que ele diz.",
+    expect(comoConfere({ modo: "hibrido", secoes: [] })).toBe(
+      "Híbrido — O app confere primeiro em código; se não conseguir concluir, a IA analisa o trecho.",
+    );
+    expect(comoConfere({ modo: "focal", secoes: ["X"] })).toBe(
+      "Focal — O app localiza os trechos relevantes no PPC e a IA confirma o que eles dizem.",
     );
     expect(comoConfere(ficha)).toBe(
-      "a IA julga as seções de Corpo docente e Gestão do curso; o app confere o trecho e as normas citadas.",
+      "Temático — A IA julga as seções de Corpo docente e Gestão do curso; o app confere o trecho e as normas citadas.",
     );
-    expect(comoConfere({ modo: "J", secoes: [] })).toMatch(/^a IA julga as seções do PPC;/);
+    expect(comoConfere({ modo: "tematico", secoes: [] })).toMatch(/^Temático — A IA julga as seções inteiras/);
+    expect(comoConfere({ modo: "transversal", secoes: [] })).toMatch(/^Transversal — A IA cruza os resumos/);
   });
 
   test("a criticidade e o estado por extenso", () => {
-    expect(nomeCriticidade("BLOQ")).toBe("Bloqueia a submissão");
+    expect(nomeCriticidade("bloqueante")).toBe("Bloqueia a submissão");
     expect(nomeCriticidade("XYZ")).toBe("XYZ");
     expect(nomeEstadoCriterio("atende")).toBe("em ordem");
     expect(nomeEstadoCriterio("nao_lido")).toBe("ainda não lido");

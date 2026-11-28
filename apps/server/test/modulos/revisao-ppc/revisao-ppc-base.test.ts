@@ -71,13 +71,23 @@ const jsonsDe = (pasta: string) =>
     .filter((nome) => nome.endsWith(".json"))
     .map((nome) => ({ nome, json: lerJson(NodePath.join(raiz, pasta, nome)) }));
 
-/** `topicos-fichas.json` lido aqui: os tópicos na ordem do arquivo, cada um com as suas fichas. */
-const topicosDoArquivo = () =>
-  (
-    lerJson(NodePath.join(raiz, "base-conhecimento/revisao-ppc/topicos-fichas.json")) as {
-      topicos: { id: string; fichas?: string[] }[];
+/** `topicos.json` lido aqui: os tópicos na ordem do arquivo, com `fichas` derivado de `topicos_tematicos` das fichas. */
+const topicosDoArquivo = () => {
+  const porTopico = new Map<string, string[]>();
+  for (const { json } of jsonsDe("base-conhecimento/revisao-ppc/fichas")) {
+    const f = json as { id: string; topicos_tematicos?: string[] };
+    for (const t of f.topicos_tematicos ?? []) {
+      const lista = porTopico.get(t) ?? [];
+      lista.push(f.id);
+      porTopico.set(t, lista);
     }
-  ).topicos.map((topico) => ({ id: topico.id, fichas: topico.fichas ?? [] }));
+  }
+  return (
+    lerJson(NodePath.join(raiz, "base-conhecimento/revisao-ppc/topicos.json")) as {
+      topicos: { id: string }[];
+    }
+  ).topicos.map((topico) => ({ id: topico.id, fichas: (porTopico.get(topico.id) ?? []).sort() }));
+};
 
 /**
  * A referência da base vinda dos arquivos, sem `montarBaseRevisao`: registro, relações, datas,

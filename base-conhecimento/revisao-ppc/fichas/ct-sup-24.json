@@ -2,16 +2,15 @@
   "id": "CT-SUP-24",
   "titulo": "Política de assistência estudantil adequada à Resolução CONSUP/IFPR nº 239/2025",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Res. CONSUP/IFPR nº 239/2025 citada, e as Res. nº 11/2009 e nº 53/2011, revogadas por ela, citadas sem ela."
   },
   "topicos_tematicos": [
     "assistencia_estudantil_permanencia",
     "referencias_normativas"
   ],
-  "tipo_escopo": "multitematico",
   "ancoras_semanticas": [
     "Política de assistência estudantil adequada à Resolução CONSUP/IFPR nº 239/2025",
     "Assistência estudantil, permanência e êxito",
@@ -78,9 +77,9 @@
   "escalonar_quando": "Escalonar se a seção usar a expressão apoio estudantil ou assistência estudantil de modo genérico, se citar apenas PDI ou programas isolados sem marco normativo vigente, se mencionar simultaneamente normas antigas e a Resolução nº 239/2025 sem esclarecer a revogação, ou se a redação aparentar ter sido copiada de PPC anterior à atualização normativa.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

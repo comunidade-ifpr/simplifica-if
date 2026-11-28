@@ -3,16 +3,17 @@
  * app confere (o modo traduzido), o estado do critério neste PPC e o texto que vai à conversa ao lado na
  * ficha da pendência.
  */
-import type { EstadoCriterio, FichaCriterio } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
+import {
+  DESCRICAO_CRITICIDADE,
+  DESCRICAO_MODO_EXECUCAO,
+  ehCriticidadeCriterio,
+  type EstadoCriterio,
+  type FichaCriterio,
+} from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 
-const CRITICIDADES: Readonly<Record<string, string>> = {
-  BLOQ: "Bloqueia a submissão",
-  OBRIG: "Obrigatório",
-  REC: "Recomendado",
-};
-
-/** A criticidade da ficha (`BLOQ`, `OBRIG`, `REC`) por extenso. */
-export const nomeCriticidade = (criticidade: string): string => CRITICIDADES[criticidade] ?? criticidade;
+/** A criticidade da ficha (`bloqueante`, `obrigatorio`, `recomendado`) por extenso. */
+export const nomeCriticidade = (criticidade: string): string =>
+  ehCriticidadeCriterio(criticidade) ? DESCRICAO_CRITICIDADE[criticidade].rotulo : criticidade;
 
 const ESTADOS: Readonly<Record<EstadoCriterio, string>> = {
   nao_atende: "para corrigir",
@@ -30,12 +31,13 @@ function emLista(itens: ReadonlyArray<string>): string {
   return itens.length <= 1 ? (itens[0] ?? "") : `${itens.slice(0, -1).join(", ")} e ${itens.at(-1)}`;
 }
 
-/** Como o app confere o critério, em uma frase. */
+/** Como o app confere o critério, com rótulo e descrição vindos da fonte única dos modos. */
 export function comoConfere(ficha: Pick<FichaCriterio, "modo" | "secoes">): string {
-  if (ficha.modo === "D") return "o app confere sozinho, sem IA.";
-  if (ficha.modo === "S") return "o app acha o trecho no PPC, e a IA confirma o que ele diz.";
-  const secoes = ficha.secoes.length === 0 ? "do PPC" : `de ${emLista(ficha.secoes)}`;
-  return `a IA julga as seções ${secoes}; o app confere o trecho e as normas citadas.`;
+  const info = DESCRICAO_MODO_EXECUCAO[ficha.modo];
+  if (ficha.modo === "tematico" && ficha.secoes.length > 0) {
+    return `${info.rotulo} — A IA julga as seções de ${emLista(ficha.secoes)}; o app confere o trecho e as normas citadas.`;
+  }
+  return `${info.rotulo} — ${info.descricao}`;
 }
 
 /**

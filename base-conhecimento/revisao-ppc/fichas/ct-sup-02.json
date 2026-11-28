@@ -2,15 +2,14 @@
   "id": "CT-SUP-02",
   "titulo": "Frequência mínima e recuperação da aprendizagem",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: percentual de frequência + termos de recuperação/recomposição."
   },
   "topicos_tematicos": [
     "avaliacao_aprendizagem"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Frequência mínima e recuperação da aprendizagem",
     "Avaliação do processo de ensino-aprendizagem",
@@ -58,9 +57,9 @@
   "escalonar_quando": "Escalonar se apenas um dos dispositivos estiver claramente descrito.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

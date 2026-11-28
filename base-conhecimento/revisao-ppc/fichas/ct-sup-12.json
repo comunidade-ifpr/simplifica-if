@@ -2,15 +2,14 @@
   "id": "CT-SUP-12",
   "titulo": "Referências com vigência normativa atualizada",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Normas citadas em todo o PPC com status revogada no registro; sem a sucessora vigente citada, é pendência; com ela, a pessoa confere se a citação é histórica."
   },
   "topicos_tematicos": [
     "referencias_normativas"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Referências com vigência normativa atualizada",
     "Referências, base legal e normas institucionais",
@@ -73,9 +72,9 @@
   "escalonar_quando": "Escalonar se houver dúvida sobre a vigência de atos específicos, sobre a substituição por versões mais recentes ou sobre a diferença entre citação contextual e fundamento normativo principal.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

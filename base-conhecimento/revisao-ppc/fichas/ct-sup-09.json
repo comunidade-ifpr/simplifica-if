@@ -2,15 +2,14 @@
   "id": "CT-SUP-09",
   "titulo": "Referências com vigência normativa observável",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Marcos centrais vigentes (DCN da EPT; no integrado, DCNEM, LDB e Lei nº 14.945/2024) entre as citações resolvidas da seção de referências, normas revogadas nela sem a sucessora e as normas da base citadas no texto que faltam nela (a conferir)."
   },
   "topicos_tematicos": [
     "referencias_normativas"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Referências com vigência normativa observável",
     "Referências, base legal e normas institucionais",
@@ -70,9 +69,9 @@
   "escalonar_quando": "Escalonar se as referências existirem, mas a suficiência normativa permanecer duvidosa, ou se houver normas antigas nas referências sem as normas atuais equivalentes.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

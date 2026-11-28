@@ -2,15 +2,14 @@
   "id": "CT-CURR-03",
   "titulo": "Distribuição entre formação geral e formação técnica",
   "dominio": "curriculo",
-  "criticidade": "BLOQ",
+  "criticidade": "bloqueante",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: somas por núcleo na matriz; a IA confirma o rótulo dos núcleos."
   },
   "topicos_tematicos": [
     "matriz_curricular"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Distribuição entre formação geral e formação técnica",
     "Matriz curricular, integralização e componentes",
@@ -85,9 +84,9 @@
   "escalonar_quando": "Escalonar se a estrutura permitir inferências, mas não oferecer discriminação suficiente. Escalonar também se houver indício de dupla contagem de horas sem demonstração de integração curricular.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

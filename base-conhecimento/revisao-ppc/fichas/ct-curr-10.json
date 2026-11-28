@@ -2,15 +2,14 @@
   "id": "CT-CURR-10",
   "titulo": "Representação gráfica coerente com a organização curricular",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: presença da representação gráfica (a conversão a detecta); a coerência fica com a pessoa (imagem)."
   },
   "topicos_tematicos": [
     "matriz_curricular"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Representação gráfica coerente com a organização curricular",
     "Matriz curricular, integralização e componentes",
@@ -44,9 +43,9 @@
   "escalonar_quando": "Escalonar se a representação existir, mas a evidência visual não bastar para fechamento seguro.",
   "evidencia_minima": 1,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

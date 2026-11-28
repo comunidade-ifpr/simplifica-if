@@ -49,7 +49,15 @@ export const cargaHorariaTotal: Verificador = {
     if (!total)
       return resultado(
         this,
-        [{ estado: "a_conferir", mensagem: "Não encontramos a carga horária total declarada.", trechos: [], fontes }],
+        [
+          {
+            estado: "a_conferir",
+            mensagem: "Não encontramos a carga horária total declarada.",
+            trechos: [],
+            fontes,
+            escalarParaIa: "nao_encontrado",
+          },
+        ],
         { estado: "a_conferir", mensagem: "" },
       );
     const evidencia = trecho(ppc, total.linha);
@@ -220,12 +228,14 @@ export const requisitoIngresso: Verificador = {
               mensagem: `O PPC fala em ${NOME_ESCOLARIDADE[outro.escolaridade]} no ingresso; para a forma ${forma}, o CNCT exige ${NOME_ESCOLARIDADE[exigida]}.`,
               trechos: [outro.trecho],
               fontes,
+              escalarParaIa: "divergente",
             }
           : {
               estado: "a_conferir",
               mensagem: `Não encontramos o requisito de escolaridade para o ingresso; para a forma ${forma}, o CNCT exige ${NOME_ESCOLARIDADE[exigida]}.`,
               trechos: [],
               fontes,
+              escalarParaIa: "nao_encontrado",
             },
       ],
       { estado: "a_conferir", mensagem: "" },
@@ -320,6 +330,7 @@ export const componentesFgb: Verificador = {
           : `Não encontramos na matriz nem no ementário: ${ausentes.join(", ")} (componentes obrigatórios da Formação Geral Básica).`,
       trechos: [],
       fontes,
+      escalarParaIa: "nao_encontrado",
     };
     return resultado(this, [apontamento], { estado: "a_conferir", mensagem: "" });
   },

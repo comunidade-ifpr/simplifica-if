@@ -11,29 +11,28 @@ import * as Schema from "effect/Schema";
 import { problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { RE_ID_NORMA } from "@simplifica-if/kb/normas/ids";
 import { esquemaReferenciaNormativa } from "@simplifica-if/kb/normas/referencia-estruturada";
+import {
+  CRITICIDADES,
+  ESTADOS_CRITERIO,
+  esquemaCriticidade,
+  esquemaEstadoCriterio,
+  esquemaModoExecucao,
+  MODOS_EXECUCAO,
+} from "@simplifica-if/kb/revisao-ppc/constantes";
 
 /** Inteiro (seguro, como o `z.int()`) maior ou igual a 1. */
 const inteiroPositivo = Schema.Number.check(Schema.isInt(), Schema.isGreaterThanOrEqualTo(1));
 
-/** Estados de uma ficha. */
-export const ESTADOS = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
-
-export const CRITICIDADES = ["BLOQ", "OBRIG", "REC"] as const;
-
-/** Modo de execução da ficha na revisão do app (M1.11, classificação da proposta C). */
-export const MODOS_EXECUCAO = ["D", "S", "J"] as const;
+export { CRITICIDADES, ESTADOS_CRITERIO as ESTADOS, MODOS_EXECUCAO };
 
 const execucao = Schema.Struct({
-  modo: Schema.Literals(MODOS_EXECUCAO).annotate({
-    description:
-      "D: o código decide com a base (verificador em packages/ppc, sem IA); S: o código acha o trecho e a IA confirma em resposta curta; J: julgamento da IA sobre as seções",
-  }),
+  modo: esquemaModoExecucao,
   justificativa: Schema.String.check(Schema.isMinLength(1)).annotate({
     description: "Por que a ficha está nesse modo: o que o código usa e o que sobra para a IA",
   }),
 }).annotate({
   description:
-    "Como a ficha é executada na revisão do app; uma ficha D precisa de verificador registrado em packages/ppc/src/verificadores",
+    "Como a ficha é executada na revisão do app; uma ficha hibrido precisa de verificador registrado em packages/ppc/src/verificadores",
 });
 const textos = Schema.Array(Schema.String);
 
@@ -41,10 +40,9 @@ export const esquemaFicha = Schema.Struct({
   id: Schema.String,
   titulo: Schema.String,
   dominio: Schema.Literals(["identidade", "curriculo", "suporte", "transversal"]),
-  criticidade: Schema.Literals(CRITICIDADES),
+  criticidade: esquemaCriticidade,
   execucao,
   topicos_tematicos: textos,
-  tipo_escopo: Schema.Literals(["tematico", "multitematico", "transversal", "condicional"]),
   ancoras_semanticas: textos,
   consultas: textos,
   referencias_normativas: Schema.optionalKey(
@@ -59,15 +57,32 @@ export const esquemaFicha = Schema.Struct({
   ma_evidencia: Schema.String,
   escalonar_quando: Schema.optionalKey(Schema.String),
   evidencia_minima: inteiroPositivo,
-  estados_permitidos: Schema.Array(Schema.Literals(ESTADOS)),
+  estados_permitidos: Schema.Array(esquemaEstadoCriterio),
   feedback_autores: Schema.optionalKey(
     Schema.Struct({
-      obrigatorio_quando_estado: Schema.optionalKey(Schema.Array(Schema.Literals(ESTADOS))),
+      obrigatorio_quando_estado: Schema.optionalKey(Schema.Array(esquemaEstadoCriterio)),
       orientacao: Schema.optionalKey(Schema.String),
     }),
   ),
 });
 export type Ficha = typeof esquemaFicha.Type;
+
+export const esquemaTopicos = Schema.Struct({
+  versao: inteiroPositivo,
+  descricao: Schema.String,
+  topicos: Schema.Array(
+    Schema.Struct({
+      id: Schema.String.check(Schema.isPattern(/^[a-z_]+$/)),
+      titulo: Schema.String.check(Schema.isMinLength(1)),
+      grupo: Schema.String.check(Schema.isMinLength(1)),
+      descricao: Schema.String.check(Schema.isMinLength(1)),
+      secoes: Schema.Array(Schema.String.check(Schema.isPattern(/^[a-z_]+$/))),
+      aliases_titulo: Schema.Array(Schema.String.check(Schema.isMinLength(1))).check(Schema.isMinLength(1)),
+      termos_busca: Schema.Array(Schema.String.check(Schema.isMinLength(1))).check(Schema.isMinLength(1)),
+    }),
+  ).check(Schema.isMinLength(1)),
+});
+export type TopicosArquivo = typeof esquemaTopicos.Type;
 
 export const esquemaMarcosNormativos = Schema.Struct({
   versao: inteiroPositivo,
@@ -115,6 +130,7 @@ export interface Marco {
 /** Contratos da base da revisão de PPC. */
 const CONTRATOS = {
   ficha: esquemaFicha,
+  topicos: esquemaTopicos,
   marcos: esquemaMarcosNormativos,
 } as const;
 export type NomeContrato = keyof typeof CONTRATOS;

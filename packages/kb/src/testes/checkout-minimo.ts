@@ -17,7 +17,6 @@ export const criarCheckoutMinimo = Effect.fn("testes.criarCheckoutMinimo")(funct
     yield* fs.writeFileString(alvo, conteudo);
   });
   yield* gravar("packages/kb/dados/sinonimos.yaml", "tipos: {}\ngrupos: []\n");
-  yield* gravar("packages/kb/dados/topicos-secoes.yaml", "{}\n");
   yield* gravar("base-conhecimento/config/vigencia.yaml", 'data_referencia: "2026-11-13"\n');
   yield* gravar("base-conhecimento/normas/stubs.yaml", "normas: []\nexternos: []\n");
   yield* gravar("base-conhecimento/relacoes.yaml", "relacoes: []\n");

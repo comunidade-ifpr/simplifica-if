@@ -2,15 +2,14 @@
   "id": "CT-IDENT-05",
   "titulo": "Concepção de EPT explicitada",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: concepção de EPT."
   },
   "topicos_tematicos": [
     "concepcao_metodologias"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Concepção de EPT explicitada",
     "Concepção pedagógica e metodologias",
@@ -68,9 +67,9 @@
   "escalonar_quando": "Escalonar se a seção mencionar EPT apenas nominalmente, sem explicar implicações curriculares, ou se a concepção usar normas revogadas ou anteriores como fundamento central sem indicar sua relação com a norma vigente.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

@@ -16,6 +16,7 @@ import type { Registro } from "@simplifica-if/kb/normas/registro";
 import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import { type Citacao, extrairCitacoes } from "@simplifica-if/kb/normas/resolver";
 import { removerAcentos, type SecaoPpc, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
+import type { MotivoEscalonamento } from "@simplifica-if/kb/revisao-ppc/constantes";
 import { rotuloDispositivo } from "./dispositivos.ts";
 import {
   type ConsultaVigencia,
@@ -84,6 +85,8 @@ export type Apontamento = {
   /** Vazio quando o problema é a ausência de algo. */
   trechos: Trecho[];
   fontes: Fonte[];
+  /** Motivo fixo (sem texto do PPC) quando o código não conseguiu concluir e a IA deve conferir. */
+  escalarParaIa?: MotivoEscalonamento | undefined;
 };
 
 export type ResultadoFicha = {
@@ -96,6 +99,8 @@ export type ResultadoFicha = {
   /** Trechos que sustentam `atende` (o que foi encontrado), quando houver. */
   evidencias: Trecho[];
   fontes: Fonte[];
+  /** Motivos fixos (sem texto do PPC) quando o verificador deu `a_conferir` e a ficha deve ir à IA. */
+  escalarParaIa?: readonly MotivoEscalonamento[] | undefined;
 };
 
 export type Verificador = {
@@ -287,23 +292,30 @@ export function apontamentoRevogada(
     [...norma.sucessoras].reverse().find((s) => !["revogada", "ainda-nao-vigente"].includes(vigencia(s).status)) ??
     direta;
   const fontes = [linkNorma(norma.id), ...(direta ? [linkNorma(direta)] : [])];
-  const conferir = (mensagem: string, extras: Fonte[] = []): Apontamento => ({
+  const conferir = (mensagem: string, extras: Fonte[] = [], escalarParaIa?: MotivoEscalonamento): Apontamento => ({
     estado: "a_conferir",
     mensagem,
     trechos,
     fontes: [...new Set([...fontes, ...extras])],
+    ...(escalarParaIa ? { escalarParaIa } : {}),
   });
   if (!segura)
     return conferir(
       `Parece citar ${norma.titulo}, revogada; a citação foi identificada com confiança menor. Confira a norma citada e as regras de transição.`,
+      [],
+      "citacao_incerta",
     );
   if (norma.sucessoraCitada)
     return conferir(
       `Cita ${norma.titulo}, revogada, e também ${titulo(norma.sucessoraCitada)}, que a sucedeu. Confira se a citação da revogada é só histórica ou de transição.`,
+      [],
+      "citacao_historica",
     );
   if (/hist[óo]ric/i.test(trechos[0]!.secao ?? ""))
     return conferir(
       `Cita ${norma.titulo}, revogada, numa seção de histórico. Confira se a citação é só histórica ou se ainda sustenta o texto.`,
+      [],
+      "citacao_historica",
     );
   const nomeSucessora = direta
     ? `${titulo(direta)}${atual && atual !== direta ? `, hoje sucedida pela ${titulo(atual)}` : ""}`
@@ -363,12 +375,17 @@ export function resultado(
       evidencias,
     };
   }
-  if (apontamentos.length)
+  if (apontamentos.length) {
+    const motivos = [
+      ...new Set(apontamentos.map((a) => a.escalarParaIa).filter((m): m is MotivoEscalonamento => m !== undefined)),
+    ];
     return {
       ...base,
       estado: "a_conferir",
       mensagem: apontamentos.length === 1 ? apontamentos[0]!.mensagem : `${apontamentos.length} pontos a conferir.`,
       evidencias,
+      ...(motivos.length ? { escalarParaIa: motivos } : {}),
     };
+  }
   return { ...base, estado: seVazio.estado, mensagem: seVazio.mensagem, evidencias };
 }

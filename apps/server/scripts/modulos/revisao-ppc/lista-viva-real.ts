@@ -110,7 +110,7 @@ const programa = Effect.gen(function* () {
         ficha,
       });
       if (ctx === null) return yield* Effect.die(`a ficha ${ficha} não tem recorte`);
-      const bloco = { id: `s-${ficha.toLowerCase()}`, tipo: "S" as const, tema: "", ordemTema: 0, fichas: [ficha] };
+      const bloco = { id: `s-${ficha.toLowerCase()}`, tipo: "focal" as const, tema: "", ordemTema: 0, fichas: [ficha] };
       const nonce = "a1b2c3d4e5f60718";
       const recortes = new Map([[ficha, ctx.proprio]]);
       const julgado = yield* julgarBloco({

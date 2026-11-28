@@ -2,9 +2,9 @@
   "id": "CT-TRANS-03",
   "titulo": "Coerência interna entre ementas e bibliografias do currículo",
   "dominio": "transversal",
-  "criticidade": "BLOQ",
+  "criticidade": "bloqueante",
   "execucao": {
-    "modo": "J",
+    "modo": "transversal",
     "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre ementas e bibliografias."
   },
   "topicos_tematicos": [
@@ -12,7 +12,6 @@
     "matriz_curricular",
     "sintese_transversal_revisao"
   ],
-  "tipo_escopo": "transversal",
   "ancoras_semanticas": [
     "Coerência interna entre ementas e bibliografias do currículo",
     "Ementário, bibliografias e conteúdos",
@@ -68,9 +67,9 @@
   "escalonar_quando": "Escalonar se a coerência depender de amostragem insuficiente, se o ementário estiver parcialmente extraído ou se houver indícios relevantes de bibliografias incompatíveis com os componentes.",
   "evidencia_minima": 3,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

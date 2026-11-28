@@ -4,9 +4,10 @@
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
+import { ESTADOS_CRITERIO } from "@simplifica-if/kb/revisao-ppc/constantes";
 
 /** Os estados de uma ficha da revisão de PPC, na ordem em que o pedido os lista. */
-export const ESTADOS_IA = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
+export const ESTADOS_IA = ESTADOS_CRITERIO;
 
 export const EstadoIa = Schema.Literals(ESTADOS_IA);
 export type EstadoIa = typeof EstadoIa.Type;

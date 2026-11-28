@@ -2,16 +2,15 @@
   "id": "CT-IDENT-18",
   "titulo": "Acompanhamento de egressos previsto com finalidade formativa",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: seção acompanhamento_egresso; a IA confirma responsáveis e instrumentos."
   },
   "topicos_tematicos": [
     "avaliacao_ppc_egressos",
     "perfil_egresso_mundo_trabalho"
   ],
-  "tipo_escopo": "multitematico",
   "ancoras_semanticas": [
     "Acompanhamento de egressos previsto com finalidade formativa",
     "Avaliação do PPC e acompanhamento de egressos",
@@ -80,15 +79,15 @@
   "escalonar_quando": "Escalonar se houver seção ou menção a egressos, mas a redação não permitir confirmar como o acompanhamento será executado ou como seus resultados serão usados pelo curso. Escalonar também se houver estratégia operacional, mas sem o prazo mínimo de dois anos, sem cronograma ou sem menção à proteção de dados pessoais.",
   "evidencia_minima": 1,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ],
   "feedback_autores": {
     "obrigatorio_quando_estado": [
-      "NAO_ATENDE",
-      "INCONCLUSIVO"
+      "nao_atende",
+      "a_conferir"
     ],
     "orientacao": "Quando houver fragilidade, produzir orientação objetiva para tornar a seção operacional, sem transformar acompanhamento de egressos em obrigação burocrática excessiva."
   }

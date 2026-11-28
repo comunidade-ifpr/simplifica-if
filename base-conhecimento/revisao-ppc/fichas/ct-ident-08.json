@@ -2,15 +2,14 @@
   "id": "CT-IDENT-08",
   "titulo": "Base legal atualizada nas seções de identidade",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Normas citadas nas seções de identidade com status revogada no registro, e se a sucessora vigente também é citada."
   },
   "topicos_tematicos": [
     "referencias_normativas"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Base legal atualizada nas seções de identidade",
     "Referências, base legal e normas institucionais",
@@ -74,9 +73,9 @@
   "escalonar_quando": "Escalonar se a fundamentação existir, mas houver dúvida sobre vigência ou suficiência normativa, especialmente quando a seção de concepção ou identidade usa a Resolução CNE/CP nº 1/2021 ou atos de 2012 como referência central sem relação explícita com as normas mais recentes.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

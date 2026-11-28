@@ -2,15 +2,14 @@
   "id": "CT-CURR-06",
   "titulo": "Bibliografia básica e complementar minimamente suficiente",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: contagem de básica/complementar por componente no ementário."
   },
   "topicos_tematicos": [
     "ementario_bibliografias"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Bibliografia básica e complementar minimamente suficiente",
     "Ementário, bibliografias e conteúdos",
@@ -50,9 +49,9 @@
   "escalonar_quando": "Escalonar se a contagem ou a conformidade formal depender de amostragem, se houver componentes parcialmente extraídos ou se a distinção entre bibliografia básica e complementar estiver ambígua.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

@@ -26,6 +26,7 @@ import { converterPpc } from "./conversao-docx/conversao.ts";
 import { identificarCurso } from "./identificacao.ts";
 import { indiceDeLinhas } from "./localizar-trecho.ts";
 import { alvoDosTrechos, LIMITES_RESPOSTA, textoDoMaiorPedaco } from "./revisao-ia/conferencia.ts";
+import type { MotivoEscalonamento } from "@simplifica-if/kb/revisao-ppc/constantes";
 import { agruparApontamentos, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { TEMAS, ordemDoTema } from "./temas.ts";
 import {
@@ -92,7 +93,7 @@ export function verificacaoDaBase(
  */
 export type ResultadoFichaIa = {
   ficha: string;
-  estado: "ATENDE" | "NAO_ATENDE" | "INCONCLUSIVO" | "NAO_APLICAVEL" | "FALHOU";
+  estado: "atende" | "nao_atende" | "a_conferir" | "nao_se_aplica" | "FALHOU";
   confianca: number;
   /** O problema numa frase curta, escrito pela IA; ausente nas respostas gravadas antes deste campo. */
   titulo?: string | undefined;
@@ -313,6 +314,8 @@ export type CriterioConferido = {
   estado: "atende" | "nao_atende" | "a_conferir" | "nao_se_aplica" | "nao_lido";
   mensagem: string;
   origem: "codigo" | "ia";
+  /** Motivos fixos (sem texto do PPC) quando o verificador em código pediu escalonamento para a IA. */
+  escalarParaIa?: readonly MotivoEscalonamento[];
 };
 
 export type CursoIdentificado = {
@@ -464,8 +467,8 @@ const linkDaFonte = (fonte: string, cnct: string | null): Fonte | null =>
  * NAO_ATENDE, porque o risco da injeção é empurrar para ATENDE; ela segura o ATENDE com lacunas.
  */
 export function estadoDaIa(r: ResultadoFichaIa): "nao_atende" | "a_conferir" | null {
-  if (r.estado === "FALHOU" || r.estado === "INCONCLUSIVO") return "a_conferir";
-  if (r.estado === "NAO_ATENDE") {
+  if (r.estado === "FALHOU" || r.estado === "a_conferir") return "a_conferir";
+  if (r.estado === "nao_atende") {
     if (r.tipoAchado === "ausencia_em_secao_presente" || r.tipoAchado === "contradicao") return "nao_atende";
     return r.confianca >= 0.6 ? "nao_atende" : "a_conferir";
   }
@@ -549,10 +552,10 @@ function itensDaIa(
 }
 
 const ESTADO_CRITERIO_IA: Record<ResultadoFichaIa["estado"], CriterioConferido["estado"]> = {
-  ATENDE: "atende",
-  NAO_ATENDE: "nao_atende",
-  INCONCLUSIVO: "a_conferir",
-  NAO_APLICAVEL: "nao_se_aplica",
+  atende: "atende",
+  nao_atende: "nao_atende",
+  a_conferir: "a_conferir",
+  nao_se_aplica: "nao_se_aplica",
   FALHOU: "a_conferir",
 };
 
@@ -795,7 +798,13 @@ function todosOsCriterios(
   ia: EntradaIa | undefined,
   base: BaseRevisaoPrevia,
 ): CriterioConferido[] {
-  const criterio = (ficha: string, estado: CriterioConferido["estado"], mensagem: string, origem: "codigo" | "ia") => {
+  const criterio = (
+    ficha: string,
+    estado: CriterioConferido["estado"],
+    mensagem: string,
+    origem: "codigo" | "ia",
+    escalarParaIa?: readonly MotivoEscalonamento[],
+  ) => {
     const ordemTema = temaDaFicha(ficha, base);
     return {
       ficha,
@@ -805,12 +814,17 @@ function todosOsCriterios(
       estado,
       mensagem,
       origem,
+      ...(escalarParaIa?.length ? { escalarParaIa: [...escalarParaIa] } : {}),
     };
   };
   const decididos = new Map<string, CriterioConferido>();
   for (const ficha of resultado.fichas)
-    decididos.set(ficha.ficha, criterio(ficha.ficha, ficha.estado, ficha.mensagem, "codigo"));
-  for (const r of ia?.resultados ?? [])
+    decididos.set(ficha.ficha, criterio(ficha.ficha, ficha.estado, ficha.mensagem, "codigo", ficha.escalarParaIa));
+  for (const r of ia?.resultados ?? []) {
+    // Em ficha híbrida, só substitui o critério do código quando a IA efetivamente decidiu
+    // (`atende`, `nao_se_aplica`, `nao_atende`); em `a_conferir` ou `FALHOU`, mantém o detalhe e
+    // o `escalarParaIa` do código para a pessoa e para eventuais releituras.
+    if (decididos.has(r.ficha) && (r.estado === "a_conferir" || r.estado === "FALHOU")) continue;
     decididos.set(
       r.ficha,
       criterio(
@@ -820,6 +834,7 @@ function todosOsCriterios(
         "ia",
       ),
     );
+  }
   const fichas = [...new Set([...Object.keys(base.fichas), ...decididos.keys()])];
   return fichas
     .map((ficha) => decididos.get(ficha) ?? criterio(ficha, "nao_lido", "", "ia"))
@@ -870,9 +885,18 @@ function montarResultado(
   const registro = entrada.registro ?? new Registro(base.normas);
   const secaoDe = localizadorDeSecoes(entrada.markdown, preConferencia.secoes);
   const vistos = new Set<string>();
+  const fichasHibridas = new Set(preConferencia.fichas.map((f) => f.ficha));
+  const decididos = (ia?.resultados ?? []).filter((r) => r.estado !== "a_conferir" && r.estado !== "FALHOU");
+  const fichasDecididasIa = new Set(decididos.map((r) => r.ficha));
   const itens = [
-    ...itensDaPreConferencia(preConferencia, registro, base),
-    ...(ia ? itensDaIa(ia, registro, base, entrada.cnct, secaoDe) : []),
+    // Em ficha híbrida escalada, os itens do código só saem quando a IA efetivamente decidiu o critério;
+    // em `a_conferir` ou `FALHOU`, o detalhe do código permanece (e o item genérico da IA não o duplica).
+    ...itensDaPreConferencia(preConferencia, registro, base).filter((item) => !fichasDecididasIa.has(item.ficha)),
+    ...(ia
+      ? itensDaIa(ia, registro, base, entrada.cnct, secaoDe).filter(
+          (item) => !(fichasHibridas.has(item.ficha) && !fichasDecididasIa.has(item.ficha)),
+        )
+      : []),
   ]
     .filter((item) => {
       const igual = JSON.stringify([item.ficha, textoDaPendencia(item), item.trecho]);
@@ -881,13 +905,11 @@ function montarResultado(
       return true;
     })
     .sort((a, b) => a.ordemTema - b.ordemTema);
-  // Só o que a IA decidiu conta como conferido; INCONCLUSIVO e a resposta recusada ficam para conferir.
-  const decididos = (ia?.resultados ?? []).filter((r) => r.estado !== "INCONCLUSIVO" && r.estado !== "FALHOU");
   const criterios = todosOsCriterios(preConferencia, ia, base);
   return {
     itens,
     criterios,
-    conferidos: preConferencia.fichas.length,
+    conferidos: preConferencia.fichas.filter((f) => !fichasDecididasIa.has(f.ficha)).length,
     conferidosIa: decididos.length,
     paraConferirIa: (ia?.resultados.length ?? 0) - decididos.length,
     foraDaRevisao: (ia?.fora ?? []).map((f) => tituloDaFicha(f, base)),

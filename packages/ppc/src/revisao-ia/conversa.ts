@@ -125,7 +125,7 @@ const historico = (turnos: readonly TurnoAnterior[]) =>
 export function tarefaContestacao(motivo: string, nonce: string) {
   const exemplo = JSON.stringify({
     decisao: "manter",
-    estado: "NAO_ATENDE",
+    estado: "nao_atende",
     explicacao:
       "O fato de versões anteriores terem sido aceitas não muda o que o texto atual diz: a seção não traz a reserva de vagas.",
     evidencias: [{ trecho: "O ingresso no curso se dará por meio de processo seletivo" }],
@@ -337,7 +337,7 @@ export function conferirContestacao(texto: string, entrada: EntradaContestacao):
   }
   const retirar = resposta.decisao === "retirar";
   if (retirar) {
-    if (resposta.estado !== "ATENDE" && resposta.estado !== "NAO_APLICAVEL")
+    if (resposta.estado !== "atende" && resposta.estado !== "nao_se_aplica")
       problemas.push("a IA pediu para retirar sem dizer que o critério é atendido ou não se aplica");
     else if (!entrada.ficha.estados_permitidos.includes(resposta.estado))
       problemas.push("o estado da resposta não é permitido para este critério");
@@ -345,7 +345,7 @@ export function conferirContestacao(texto: string, entrada: EntradaContestacao):
       problemas.push(
         `a IA pediu para retirar sem um trecho da seção do critério (ao menos ${PROVA_MINIMA} caracteres, que não seja o título nem o trecho apontado) que o app pudesse conferir`,
       );
-    if (resposta.estado === "NAO_APLICAVEL" && !fontes.some((f) => f.includes("#")))
+    if (resposta.estado === "nao_se_aplica" && !fontes.some((f) => f.includes("#")))
       problemas.push("a IA disse que não se aplica sem citar o dispositivo entregue que afasta a exigência");
   }
   const aceita = retirar && problemas.length === 0;

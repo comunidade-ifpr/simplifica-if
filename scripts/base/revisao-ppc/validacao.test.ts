@@ -24,7 +24,6 @@ import {
   validarMarcosNormativos,
   validarReferenciasFichas,
   validarRevisaoPpc,
-  validarTopicosSecoes,
 } from "./validacao.ts";
 
 const caminhos = caminhosRevisaoPpc();
@@ -42,7 +41,7 @@ function copiaDaBase(): CaminhosRevisaoPpc {
   const destinoNormas = NodePath.join(raiz, CAMINHOS.normas);
   NodeFS.mkdirSync(NodePath.dirname(destinoNormas), { recursive: true });
   NodeFS.symlinkSync(NodePath.join(caminhos.raiz, CAMINHOS.normas), destinoNormas);
-  for (const relativo of ["base-conhecimento/catalogos/cnct/index.json", CAMINHOS.topicosSecoes, CAMINHOS.revisaoPpc]) {
+  for (const relativo of ["base-conhecimento/catalogos/cnct/index.json", CAMINHOS.revisaoPpc]) {
     NodeFS.mkdirSync(NodePath.dirname(NodePath.join(raiz, relativo)), { recursive: true });
     NodeFS.cpSync(NodePath.join(caminhos.raiz, relativo), NodePath.join(raiz, relativo), { recursive: true });
   }
@@ -63,16 +62,6 @@ describe("base da revisão de PPC real", () => {
   });
 });
 
-describe("mapa tópico → tipos de seção do kb", () => {
-  test("todo tópico da taxonomia tem entrada, e toda entrada é tópico", () => {
-    const topicos = (lerJson(caminhos.topicosFichas) as { topicos: { id: string }[] }).topicos.map((t) => t.id);
-    expect(validarTopicosSecoes(new Set(topicos), caminhos)).toEqual([]);
-    const erros = validarTopicosSecoes(new Set([...topicos.filter((id) => id !== "estagio"), "topico_novo"]), caminhos);
-    expect(erros.some((erro) => erro.endsWith("tópico sem tipos de seção: topico_novo"))).toBe(true);
-    expect(erros.some((erro) => erro.endsWith("tópico desconhecido: estagio"))).toBe(true);
-  });
-});
-
 describe("validador em casos inválidos", () => {
   test("ficha fora do contrato, com o caminho de cada campo", () => {
     const c = copiaDaBase();
@@ -80,35 +69,35 @@ describe("validador em casos inválidos", () => {
     editarJson(arquivo, (ficha) => {
       ficha.criticidade = "XX";
       ficha.evidencia_minima = 0;
-      ficha.estados_permitidos = ["ATENDE", "FOO", 3];
+      ficha.estados_permitidos = ["atende", "foo", 3];
       ficha.titulo = null;
       delete ficha.pergunta;
     });
     expect(validar(c)).toEqual([
       `${arquivo}: $.titulo: esperava um texto`,
-      `${arquivo}: $.criticidade: esperava um destes valores: "BLOQ", "OBRIG", "REC"`,
+      `${arquivo}: $.criticidade: esperava um destes valores: "bloqueante", "obrigatorio", "recomendado"`,
       `${arquivo}: $.pergunta: campo obrigatório ausente`,
       `${arquivo}: $.evidencia_minima: esperava um valor maior ou igual a 1`,
-      `${arquivo}: $.estados_permitidos[1]: esperava um destes valores: "ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"`,
-      `${arquivo}: $.estados_permitidos[2]: esperava um destes valores: "ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"`,
+      `${arquivo}: $.estados_permitidos[1]: esperava um destes valores: "atende", "nao_atende", "a_conferir", "nao_se_aplica"`,
+      `${arquivo}: $.estados_permitidos[2]: esperava um destes valores: "atende", "nao_atende", "a_conferir", "nao_se_aplica"`,
     ]);
   });
 
-  test("ficha sem execucao, D sem verificador e verificador de ficha que não é D", () => {
+  test("ficha sem execucao, hibrido sem verificador e verificador de ficha que não é hibrido", () => {
     const c = copiaDaBase();
     const semExecucao = NodePath.join(c.fichas, "ct-curr-01.json");
     editarJson(semExecucao, (ficha) => void delete ficha.execucao);
-    // CT-CURR-12 vira D sem verificador; CT-CURR-02, que tem verificador, vira J.
+    // CT-CURR-12 vira hibrido sem verificador; CT-CURR-02, que tem verificador, vira tematico.
     editarJson(NodePath.join(c.fichas, "ct-curr-12.json"), (ficha) => {
-      ficha.execucao = { modo: "D", justificativa: "teste" };
+      ficha.execucao = { modo: "hibrido", justificativa: "teste" };
     });
     editarJson(NodePath.join(c.fichas, "ct-curr-02.json"), (ficha) => {
-      ficha.execucao = { modo: "J", justificativa: "teste" };
+      ficha.execucao = { modo: "tematico", justificativa: "teste" };
     });
     expect(validar(c)).toEqual([
       `${semExecucao}: $.execucao: campo obrigatório ausente`,
-      "CT-CURR-12: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts",
-      "verificador d-carga-horaria-total: registrado para CT-CURR-02, que não é ficha D",
+      "CT-CURR-12: execucao.modo hibrido sem verificador registrado em packages/ppc/src/verificadores/registro.ts",
+      "verificador d-carga-horaria-total: registrado para CT-CURR-02, que não é ficha hibrido",
     ]);
   });
 
@@ -125,13 +114,7 @@ describe("validador em casos inválidos", () => {
     editarJson(arquivo, (ficha) => {
       ficha.topicos_tematicos = [...(ficha.topicos_tematicos as string[]), "inexistente"];
     });
-    const declarados = (lerJson(arquivo) as ObjetoJson).topicos_tematicos as string[];
-    const esperados = declarados.filter((topico) => topico !== "inexistente").sort();
-    expect(validar(c)).toEqual([
-      "CT-CURR-03: tópicos desconhecidos: inexistente",
-      `CT-CURR-03: topicos_tematicos divergente da taxonomia (ficha=['${[...declarados].sort().join("', '")}'], ` +
-        `taxonomia=['${esperados.join("', '")}'])`,
-    ]);
+    expect(validar(c)).toEqual(["CT-CURR-03: tópicos desconhecidos: inexistente"]);
   });
 
   test("referência a norma revogada, substituída por marco, a dispositivo revogado e a ID inexistente", () => {

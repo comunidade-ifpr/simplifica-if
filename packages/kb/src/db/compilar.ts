@@ -922,7 +922,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         ordem,
         topico,
         tipos_json: json(tipos),
-        path: CAMINHOS.topicosSecoes,
+        path: CAMINHOS.topicosFichas,
       });
     });
 

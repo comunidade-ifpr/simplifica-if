@@ -2,16 +2,15 @@
   "id": "CT-IDENT-19",
   "titulo": "Registro profissional descrito com conselho e base aplicável",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: conselho do CNCT citado; a IA confere \"promessa automática\" de registro."
   },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho",
     "referencias_normativas"
   ],
-  "tipo_escopo": "multitematico",
   "ancoras_semanticas": [
     "Registro profissional descrito com conselho e base aplicável",
     "Perfil do egresso, competências e mundo do trabalho",
@@ -91,15 +90,15 @@
   "escalonar_quando": "Escalonar se o PPC mencionar conselho profissional ou registro, mas houver dúvida sobre a legislação aplicável, sobre a vigência da norma citada ou sobre a suficiência da redação para orientar autores e avaliadores.",
   "evidencia_minima": 1,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ],
   "feedback_autores": {
     "obrigatorio_quando_estado": [
-      "NAO_ATENDE",
-      "INCONCLUSIVO"
+      "nao_atende",
+      "a_conferir"
     ],
     "orientacao": "Quando houver fragilidade, apontar se o problema está na identificação do conselho, na redação sobre o procedimento de registro ou na ausência/inconsistência da legislação profissional aplicável."
   }

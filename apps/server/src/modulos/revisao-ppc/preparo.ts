@@ -167,6 +167,8 @@ export interface EntradaPreparo {
   readonly criterio?: CriterioInconclusivo;
   /** Só estas fichas (o script de avaliação); sem ele, as do modo. */
   readonly soFichas?: readonly string[];
+  /** Fichas `hibrido` escaladas pela pré-conferência em código, com a mensagem do verificador como pista. */
+  readonly escaladas?: ReadonlyMap<string, string>;
 }
 
 /** O plano da revisão: fichas, blocos e pedidos. Pede o `PacoteRevisaoPpc` do `kb.sqlite`. */
@@ -176,6 +178,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
   const criterio = entrada.criterio ?? CRITERIO_PADRAO;
   const todasFichas = fichasJson.map((f) => fichaIa(f as Record<string, unknown>));
   const fichas = entrada.soFichas ? todasFichas.filter((f) => entrada.soFichas!.includes(f.id)) : todasFichas;
+  const escaladasIds = entrada.escaladas?.size ? new Set(entrada.escaladas.keys()) : undefined;
   const porId = new Map(fichas.map((f) => [f.id, f]));
   const jsonPorId = new Map(fichasJson.map((f) => [f.id, f]));
   const limpo = retirarTextoParaIa(entrada.markdown, entrada.linhasTextoParaIa);
@@ -189,9 +192,9 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
 
   const blocos: BlocoPlano[] = [];
   let transversais: PlanoRevisaoIa["transversais"] = null;
-  for (const bloco of planejarBlocos(fichas, entrada.modo)) {
+  for (const bloco of planejarBlocos(fichas, entrada.modo, undefined, escaladasIds)) {
     const doBloco = bloco.fichas.map((id) => porId.get(id)!);
-    if (bloco.tipo === "S") {
+    if (bloco.tipo === "focal") {
       const geral = yield* pacote(bloco.fichas, 0);
       const contexto = contextoDoPacote(geral, entrada.curso);
       const comum = comumDoBloco(doBloco, estrutura);
@@ -200,10 +203,19 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
         const proprio = yield* pacote([ficha.id], 1);
         recortes.set(ficha.id, recorteDaFicha(ficha, secoesTexto(proprio, false), comum));
       }
-      const pedido = pedidoS(bloco, doBloco, recortes, contexto, entrada.nonce, comum.texto, criterio);
+      const pedido = pedidoS(
+        bloco,
+        doBloco,
+        recortes,
+        contexto,
+        entrada.nonce,
+        comum.texto,
+        criterio,
+        entrada.escaladas,
+      );
       const alvos = alvosPorRecorte(doBloco, recortes, comum.texto);
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)], alvos });
-    } else if (bloco.tipo === "J") {
+    } else if (bloco.tipo === "tematico") {
       const p = yield* pacote(bloco.fichas, 0);
       const contexto = contextoDoPacote(p, entrada.curso);
       const comum = comumDoBloco(doBloco, estrutura);
@@ -239,7 +251,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
     nonce: entrada.nonce,
     cnct: entrada.cnct,
     fichas: fichas.filter((f) => blocos.some((b) => b.fichas.includes(f.id))),
-    fora: fichasForaDoModo(fichas, entrada.modo).map((f) => f.id),
+    fora: fichasForaDoModo(fichas, entrada.modo, escaladasIds).map((f) => f.id),
     blocos,
     transversais,
     criterio,

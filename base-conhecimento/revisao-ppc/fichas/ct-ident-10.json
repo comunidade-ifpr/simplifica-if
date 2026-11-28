@@ -2,15 +2,14 @@
   "id": "CT-IDENT-10",
   "titulo": "Competências do egresso alinhadas à habilitação profissional",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: competências × perfil do CNCT."
   },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Competências do egresso alinhadas à habilitação profissional",
     "Perfil do egresso, competências e mundo do trabalho",
@@ -44,9 +43,9 @@
   "escalonar_quando": "Escalonar se houver competências relevantes, mas permanecer dúvida sobre sua aderência efetiva à habilitação técnica ou ao perfil profissional CNCT.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

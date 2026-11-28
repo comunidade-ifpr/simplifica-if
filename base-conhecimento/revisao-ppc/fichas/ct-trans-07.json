@@ -2,9 +2,9 @@
   "id": "CT-TRANS-07",
   "titulo": "Dimensionamento de vagas compatível com infraestrutura e interesse público",
   "dominio": "transversal",
-  "criticidade": "REC",
+  "criticidade": "recomendado",
   "execucao": {
-    "modo": "J",
+    "modo": "transversal",
     "justificativa": "Julgamento transversal sobre os resumos dos temas: vagas × infraestrutura e interesse público."
   },
   "topicos_tematicos": [
@@ -12,7 +12,6 @@
     "infraestrutura",
     "sintese_transversal_revisao"
   ],
-  "tipo_escopo": "transversal",
   "ancoras_semanticas": [
     "Dimensionamento de vagas compatível com infraestrutura e interesse público",
     "Identificação e características da oferta",
@@ -80,9 +79,9 @@
   "escalonar_quando": "Escalonar sempre que o número de vagas ofertadas for inferior a 40 sem justificativa clara; quando houver faixa ampla de vagas sem critérios de aplicação; ou quando parecer haver subutilização de laboratórios, salas, docentes ou demais recursos públicos.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

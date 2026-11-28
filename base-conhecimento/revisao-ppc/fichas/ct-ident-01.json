@@ -2,15 +2,14 @@
   "id": "CT-IDENT-01",
   "titulo": "Denominação do curso alinhada ao CNCT",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Denominação do curso no início do PPC contra a do CNCT."
   },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Denominação do curso alinhada ao CNCT",
     "Identificação e características da oferta",
@@ -53,15 +52,15 @@
     }
   ],
   "pergunta": "A denominação do curso e sua apresentação institucional estão compatíveis com a denominação do curso correspondente no CNCT?",
-  "rubrica": "Comparar o nome do curso no PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.denominacao` e verificar se o nome aparece de forma estável, sem variações materiais entre capa, identificação, perfil e referências. Se o PPC declarar curso experimental, fora do CNCT, verificar a comprovação da capacidade institucional (art. 47, I, da Resolução CNE/CP nº 2/2026), a informação da condição experimental aos candidatos (III), o compromisso de submeter o curso ao reconhecimento em até um ano após a conclusão da primeira turma (IV) e, se o curso constar de tabela de convergência ou de submissão do CNCT, a justificativa técnica (§ 1º). Nesse caso, as fichas que dependem da correspondência CNCT devem usar INCONCLUSIVO com revisão humana.",
+  "rubrica": "Comparar o nome do curso no PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.denominacao` e verificar se o nome aparece de forma estável, sem variações materiais entre capa, identificação, perfil e referências. Se o PPC declarar curso experimental, fora do CNCT, verificar a comprovação da capacidade institucional (art. 47, I, da Resolução CNE/CP nº 2/2026), a informação da condição experimental aos candidatos (III), o compromisso de submeter o curso ao reconhecimento em até um ano após a conclusão da primeira turma (IV) e, se o curso constar de tabela de convergência ou de submissão do CNCT, a justificativa técnica (§ 1º). Nesse caso, as fichas que dependem da correspondência CNCT devem usar a_conferir com revisão humana.",
   "boa_evidencia": "Título do PPC, quadro de identificação e seção de perfil profissional usando denominação compatível com o campo `Denominação do Curso` do CNCT.",
   "ma_evidencia": "Nomes divergentes entre capa, apresentação, perfil do egresso ou referências ao curso, ou denominação materialmente diferente da correspondência CNCT.",
   "escalonar_quando": "Escalonar se houver divergência nominal relevante, ambiguidade entre habilitações, correspondência CNCT incerta ou ausência de âncora documental suficiente.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

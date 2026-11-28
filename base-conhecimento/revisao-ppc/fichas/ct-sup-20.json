@@ -2,15 +2,14 @@
   "id": "CT-SUP-20",
   "titulo": "Recursos de acessibilidade e medidas de permanência estão previstos",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: recursos de acessibilidade e permanência."
   },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Recursos de acessibilidade e medidas de permanência estão previstos",
     "AEE, acessibilidade e inclusão",
@@ -78,9 +77,9 @@
   "escalonar_quando": "Escalonar se o PPC trouxer alguns recursos ou medidas, mas a suficiência prática do apoio à permanência continuar incerta.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

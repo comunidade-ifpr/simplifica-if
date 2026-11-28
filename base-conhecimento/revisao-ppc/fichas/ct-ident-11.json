@@ -2,15 +2,14 @@
   "id": "CT-IDENT-11",
   "titulo": "Campos de atuação profissional do egresso estão explicitados",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: campo de atuação do CNCT × termos do PPC; a IA confirma equivalências."
   },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Campos de atuação profissional do egresso estão explicitados",
     "Perfil do egresso, competências e mundo do trabalho",
@@ -43,9 +42,9 @@
   "escalonar_quando": "Escalonar se houver menção a atuação profissional, mas sem delimitação suficiente de contextos, funções, vínculo com a habilitação ou aderência ao campo CNCT.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

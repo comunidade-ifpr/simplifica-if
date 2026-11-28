@@ -34,6 +34,7 @@ export const denominacaoCnct: Verificador = {
             mensagem: `Não encontramos a denominação "Técnico em …" no início do PPC. Pelo CNCT, é "${cnct.denominacao}".`,
             trechos: [],
             fontes,
+            escalarParaIa: "nao_encontrado",
           },
         ],
         { estado: "a_conferir", mensagem: "" },
@@ -94,12 +95,14 @@ export const eixoCnct: Verificador = {
           mensagem: `O eixo declarado ("${eixos[0]![1]!.trim()}") difere do CNCT: "${cnct.eixo_tecnologico}".`,
           trechos: [trecho(ppc, linhaDe(ppc.markdown, eixos[0]!.index), eixos[0]![1]!.trim())],
           fontes,
+          escalarParaIa: "divergente",
         }
       : {
           estado: "a_conferir",
           mensagem: `Não encontramos o eixo tecnológico declarado. Pelo CNCT, é "${cnct.eixo_tecnologico}".`,
           trechos: [],
           fontes,
+          escalarParaIa: "nao_encontrado",
         };
     return resultado(this, [apontamento], { estado: "a_conferir", mensagem: "" });
   },

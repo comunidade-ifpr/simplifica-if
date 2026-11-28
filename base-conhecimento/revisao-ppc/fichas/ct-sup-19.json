@@ -2,15 +2,14 @@
   "id": "CT-SUP-19",
   "titulo": "AEE tratado com procedimentos e público-alvo compatíveis, quando aplicável",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: AEE: procedimentos e público."
   },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "AEE tratado com procedimentos e público-alvo compatíveis, quando aplicável",
     "AEE, acessibilidade e inclusão",
@@ -65,9 +64,9 @@
   "escalonar_quando": "Escalonar se houver menções ao AEE, mas permanecerem dúvidas sobre público atendido, procedimento, adequação conceitual à normativa ou natureza apenas descritiva versus componente curricular.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

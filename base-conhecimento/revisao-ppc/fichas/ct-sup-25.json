@@ -2,16 +2,15 @@
   "id": "CT-SUP-25",
   "titulo": "Biblioteca descrita com acessibilidade física e condições de acesso",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: biblioteca: andar, piso, acessibilidade (termos)."
   },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao",
     "infraestrutura"
   ],
-  "tipo_escopo": "multitematico",
   "ancoras_semanticas": [
     "Biblioteca descrita com acessibilidade física e condições de acesso",
     "AEE, acessibilidade e inclusão",
@@ -68,9 +67,9 @@
   "escalonar_quando": "Escalonar se houver seção de biblioteca, mas não for possível confirmar se ela fica no térreo ou se possui acesso acessível; se rampa/elevador/escada forem mencionados sem relação clara com a biblioteca; ou se a acessibilidade aparecer apenas em outra seção sem permitir concluir sua aplicação ao espaço da biblioteca.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

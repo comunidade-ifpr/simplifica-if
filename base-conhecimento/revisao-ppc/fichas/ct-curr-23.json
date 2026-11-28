@@ -2,16 +2,15 @@
   "id": "CT-CURR-23",
   "titulo": "Distribuição semanal das aulas e contraturnos explicitada",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: CH semanal da matriz × turno; a IA confirma o contraturno no trecho."
   },
   "topicos_tematicos": [
     "identificacao_oferta",
     "matriz_curricular"
   ],
-  "tipo_escopo": "multitematico",
   "ancoras_semanticas": [
     "Distribuição semanal das aulas e contraturnos explicitada",
     "Identificação e características da oferta",
@@ -67,9 +66,9 @@
   "escalonar_quando": "Escalonar se a matriz indicar carga semanal que depende de contraturno, mas o PPC não demonstrar quantos contraturnos serão usados, quantas aulas ocorrerão em cada contraturno ou qual regra organizará essa distribuição.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

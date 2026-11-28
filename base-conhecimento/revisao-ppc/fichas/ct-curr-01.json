@@ -2,15 +2,14 @@
   "id": "CT-CURR-01",
   "titulo": "Matriz curricular estruturada e legível",
   "dominio": "curriculo",
-  "criticidade": "BLOQ",
+  "criticidade": "bloqueante",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: tabela da matriz convertida (componentes, períodos, CH); a IA só olha se a matriz não for reconhecida."
   },
   "topicos_tematicos": [
     "matriz_curricular"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Matriz curricular estruturada e legível",
     "Matriz curricular, integralização e componentes",
@@ -41,9 +40,9 @@
   "escalonar_quando": "Escalonar se a matriz existir, mas com lacunas relevantes de legibilidade ou completude.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

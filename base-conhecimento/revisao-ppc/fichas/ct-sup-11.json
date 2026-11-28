@@ -2,16 +2,15 @@
   "id": "CT-SUP-11",
   "titulo": "Acessibilidade física e arquitetônica",
   "dominio": "suporte",
-  "criticidade": "REC",
+  "criticidade": "recomendado",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: termos de acessibilidade física."
   },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao",
     "infraestrutura"
   ],
-  "tipo_escopo": "multitematico",
   "ancoras_semanticas": [
     "Acessibilidade física e arquitetônica",
     "AEE, acessibilidade e inclusão",
@@ -54,9 +53,9 @@
   "escalonar_quando": "Escalonar se a acessibilidade aparecer apenas em termos genéricos, sem apoio material.",
   "evidencia_minima": 1,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

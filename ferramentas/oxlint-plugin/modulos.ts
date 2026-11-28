@@ -28,6 +28,7 @@ export const ARQUIVOS_QUE_IMPORTAM: ReadonlyArray<string> = [
   "apps/server/src/persistencia/migracoes/0003_ArquivoAcompanhado.ts",
   "apps/server/src/persistencia/migracoes/0004_ConversaAoLado.ts",
   "apps/server/src/persistencia/migracoes/0005_AtividadesEContinuacao.ts",
+  "apps/server/src/persistencia/migracoes/0006_VocabularioRevisaoPpc.ts",
   // interface: a casca da rota, o estado de longa duração (com os links do Ler) e o recente do Início
   "apps/web/src/routes/revisao-ppc.tsx",
   "apps/web/src/inicializar.ts",

@@ -2,9 +2,9 @@
   "id": "CT-TRANS-02",
   "titulo": "Coerência entre concepção, metodologias e avaliação",
   "dominio": "transversal",
-  "criticidade": "BLOQ",
+  "criticidade": "bloqueante",
   "execucao": {
-    "modo": "J",
+    "modo": "transversal",
     "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre concepção, metodologias e avaliação."
   },
   "topicos_tematicos": [
@@ -12,7 +12,6 @@
     "concepcao_metodologias",
     "sintese_transversal_revisao"
   ],
-  "tipo_escopo": "transversal",
   "ancoras_semanticas": [
     "Coerência entre concepção, metodologias e avaliação",
     "Avaliação do processo de ensino-aprendizagem",
@@ -73,9 +72,9 @@
   "escalonar_quando": "Escalonar se o alinhamento for apenas parcial ou depender de inferência frágil.",
   "evidencia_minima": 3,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

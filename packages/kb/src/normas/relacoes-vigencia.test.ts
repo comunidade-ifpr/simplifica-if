@@ -218,7 +218,7 @@ const ARQUIVOS_SINTETICOS = [
     texto: JSON.stringify({ marcos: [{ id: "dcn_ept", linha: [DCN_2021, DCN_2026] }] }),
   },
   {
-    arquivo: "base-conhecimento/revisao-ppc/topicos-fichas.json",
+    arquivo: "base-conhecimento/revisao-ppc/topicos.json",
     texto: JSON.stringify({ topicos: [{ id: "estagio", termos_busca: ["estágio"] }] }),
   },
 ];

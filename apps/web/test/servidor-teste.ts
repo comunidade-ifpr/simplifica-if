@@ -66,7 +66,7 @@ inserirNormas(banco);
 inserirExplorar(banco);
 // A taxonomia de tópicos das fichas da revisão de PPC, para a revisão prévia agrupar por tema.
 {
-  const arquivo = NodePath.resolve(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/topicos-fichas.json");
+  const arquivo = NodePath.resolve(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/topicos.json");
   const { topicos } = JSON.parse(NodeFS.readFileSync(arquivo, "utf8")) as {
     topicos: Array<{ id: string; titulo: string }>;
   };
@@ -75,13 +75,7 @@ inserirExplorar(banco);
     "INSERT INTO revisao_ppc_topicos (id, ordem, titulo, termos_json, path, dados_json) VALUES (?, ?, ?, '[]', ?, ?)",
   );
   topicos.forEach((topico, ordem) =>
-    inserir.run(
-      topico.id,
-      ordem,
-      topico.titulo,
-      "base-conhecimento/revisao-ppc/topicos-fichas.json",
-      JSON.stringify(topico),
-    ),
+    inserir.run(topico.id, ordem, topico.titulo, "base-conhecimento/revisao-ppc/topicos.json", JSON.stringify(topico)),
   );
   db.close();
 }

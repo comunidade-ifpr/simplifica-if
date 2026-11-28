@@ -2,15 +2,14 @@
   "id": "CT-CURR-18",
   "titulo": "Componentes obrigatórios e conteúdos legais da FGB contemplados",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Componentes obrigatórios da Formação Geral Básica procurados pelo nome nas tabelas da matriz e do ementário; só se aplica ao integrado."
   },
   "topicos_tematicos": [
     "matriz_curricular"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Componentes obrigatórios e conteúdos legais da FGB contemplados",
     "Matriz curricular, integralização e componentes",
@@ -93,9 +92,9 @@
   "escalonar_quando": "Escalonar se a presença de qualquer componente obrigatório depender de inferência frágil, se houver nomenclaturas ambíguas ou se matriz e ementas não permitirem confirmar a cobertura material.",
   "evidencia_minima": 3,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

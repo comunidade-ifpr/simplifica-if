@@ -7,6 +7,7 @@
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
+import { ESTADOS_CRITERIO } from "@simplifica-if/kb/revisao-ppc/constantes";
 import { compilarPadrao } from "./normalizar.ts";
 
 /** Texto com as pontas aparadas e pelo menos um caractere. */
@@ -41,11 +42,9 @@ export const esquemaAncora = Schema.String.check(
   ),
 );
 
-const ESTADOS_FICHA = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
-
 const esquemaAchadoOuro = Schema.Struct({
   ficha: Schema.String.check(Schema.isPattern(/^CT-(?:CURR|IDENT|SUP|TRANS)-\d{2}$/u)),
-  estado_esperado: Schema.Literals(ESTADOS_FICHA),
+  estado_esperado: Schema.Literals(ESTADOS_CRITERIO),
   justificativa: textoNaoVazio,
   /** Trechos literais do PPC convertido; o teste confere que cada um existe no arquivo. */
   evidencias: Schema.Array(Schema.Struct({ trecho: textoNaoVazio, observacao: Schema.optional(Schema.String) })).check(

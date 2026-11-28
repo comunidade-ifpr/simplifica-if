@@ -2,15 +2,14 @@
   "id": "CT-CURR-09",
   "titulo": "Inclusão e flexibilização curricular articuladas ao currículo",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: inclusão no currículo."
   },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Inclusão, AEE e flexibilização curricular articulados ao currículo",
     "AEE, acessibilidade e inclusão",
@@ -59,9 +58,9 @@
   "escalonar_quando": "Escalonar se o tema aparecer de forma indireta ou insuficientemente desenvolvida na organização curricular.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

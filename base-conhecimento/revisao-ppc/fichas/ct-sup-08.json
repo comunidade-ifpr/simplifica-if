@@ -2,15 +2,14 @@
   "id": "CT-SUP-08",
   "titulo": "Avaliação periódica do PPC e acompanhamento de egressos",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: seção avaliacao_curso + Res. CONSUP 64/2022; a IA confirma periodicidade e responsáveis."
   },
   "topicos_tematicos": [
     "avaliacao_ppc_egressos"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Avaliação periódica do PPC e acompanhamento de egressos",
     "Avaliação do PPC e acompanhamento de egressos",
@@ -99,9 +98,9 @@
   "escalonar_quando": "Escalonar se houver menções esparsas a avaliação, CPA, colegiado, egressos ou indicadores, mas não for possível confirmar processo anual/contínuo de avaliação do PPC; se não houver previsão de atas ou registro no processo; se a participação estudantil estiver omitida; ou se a seção citar normas antigas ou genéricas sem enfrentar a Resolução CONSUP/IFPR nº 64/2022 e a Portaria PROENS/IFPR nº 121/2024.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

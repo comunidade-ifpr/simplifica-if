@@ -2,15 +2,14 @@
   "id": "CT-IDENT-09",
   "titulo": "Modalidade coerente com a narrativa do PPC",
   "dominio": "identidade",
-  "criticidade": "REC",
+  "criticidade": "recomendado",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: modalidade declarada × menções a EaD/AVA."
   },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Modalidade coerente com a narrativa do PPC",
     "Identificação e características da oferta",
@@ -47,9 +46,9 @@
   "escalonar_quando": "Escalonar se a modalidade depender de inferência indireta ou estiver apenas implicitamente indicada.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

@@ -28,8 +28,8 @@ const FICHA = {
   id: "CT-TESTE-01",
   titulo: "Acompanhamento de egressos",
   dominio: "gestao",
-  criticidade: "OBRIG",
-  execucao: { modo: "S", justificativa: "Busca semântica do trecho de egressos." },
+  criticidade: "obrigatorio",
+  execucao: { modo: "focal", justificativa: "Busca semântica do trecho de egressos." },
   pergunta: "O PPC descreve o acompanhamento de egressos?",
   rubrica: "Conferir a metodologia e o cronograma do acompanhamento.",
   boa_evidencia: "Metodologia e cronograma do acompanhamento.",
@@ -53,7 +53,7 @@ const banco = criarBancoFixturePpcs();
     "egressos",
     0,
     "Egressos",
-    "base-conhecimento/revisao-ppc/topicos-fichas.json",
+    "base-conhecimento/revisao-ppc/topicos.json",
     JSON.stringify({ id: "egressos", titulo: "Egressos", fichas: [FICHA.id] }),
   );
   db.prepare("INSERT INTO revisao_ppc_fichas_topicos (ficha_id, topico_id) VALUES (?, ?)").run(FICHA.id, "egressos");
@@ -77,7 +77,7 @@ describe("criterios_revisao_ppc", () => {
       expect(resposta.dados.filtro).toEqual({ campo: "id", valor: "ct-teste-01" });
       expect(c!.id).toBe("CT-TESTE-01");
       expect(c!.topicos).toEqual(["egressos"]);
-      expect(c!.execucao).toEqual({ modo: "S", justificativa: "Busca semântica do trecho de egressos." });
+      expect(c!.execucao).toEqual({ modo: "focal", justificativa: "Busca semântica do trecho de egressos." });
       expect(c!.campos.map((campo) => campo.campo)).toEqual(["pergunta", "rubrica", "boa_evidencia"]);
       expect(c!.campos[0]!.fonte).toEqual({ path: PATH, linha_inicio: 10, linha_fim: 10 });
       expect(c!.referencias).toEqual([
@@ -95,7 +95,9 @@ describe("criterios_revisao_ppc", () => {
       expect(texto).toContain('Critérios da tarefa "Revisar um PPC" para o critério ct-teste-01: 1.');
       expect(texto).toContain("não fonte normativa");
       expect(texto).toContain("**O que confere:** O PPC descreve o acompanhamento de egressos?");
-      expect(texto).toContain("**Como o app confere:** o app acha o trecho e a IA confirma");
+      expect(texto).toContain(
+        "**Como o app confere:** Focal — O app localiza os trechos relevantes no PPC e a IA confirma o que eles dizem",
+      );
       expect(texto).toContain(
         "- [Resolução CNE/CP nº 2/2026, art. 28, XVIII](ifpr://norma/br/cne-cp/res/2026/2#art28-xviii) (fundamento; ainda-nao-vigente)",
       );

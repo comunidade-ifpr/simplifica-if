@@ -2,15 +2,14 @@
   "id": "CT-CURR-13",
   "titulo": "Aproveitamento de estudos com critérios e procedimento definidos",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: seção aproveitamento_estudos; a IA confirma critérios e procedimento no trecho."
   },
   "topicos_tematicos": [
     "aproveitamento_certificacao_tfc"
   ],
-  "tipo_escopo": "condicional",
   "ancoras_semanticas": [
     "Aproveitamento de estudos com critérios e procedimento definidos",
     "Aproveitamento, certificação intermediária e trabalho final",
@@ -65,9 +64,9 @@
   "escalonar_quando": "Escalonar se o PPC citar o aproveitamento de estudos, mas não deixar claro se segue a Resolução IFPR nº 190/2024, se a referência normativa estiver incorreta ou se faltar critério mínimo de equivalência documental.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

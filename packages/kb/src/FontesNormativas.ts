@@ -156,6 +156,7 @@ const linhasSinonimosTipos = Sql.todas(
 );
 const linhasSinonimosGrupos = Sql.todas(Schema.Struct({ termos_json: Schema.fromJsonString(ListaTextos) }));
 const linhasTopicos = Sql.todas(Schema.Struct({ dados_json: Schema.fromJsonString(Schema.Unknown) }));
+const linhasFichasTopicos = Sql.todas(Schema.Struct({ ficha_id: Schema.String, topico_id: Schema.String }));
 const linhasTopicosSecoes = Sql.todas(
   Schema.Struct({ topico: Schema.String, tipos_json: Schema.fromJsonString(Schema.Unknown) }),
 );
@@ -264,8 +265,21 @@ const make = Effect.gen(function* () {
   });
 
   const linhasTop = yield* linhasTopicos("SELECT dados_json FROM revisao_ppc_topicos ORDER BY ordem");
+  const linhasFT = yield* linhasFichasTopicos(
+    "SELECT ficha_id, topico_id FROM revisao_ppc_fichas_topicos ORDER BY topico_id, ficha_id",
+  );
+  const fichasPorTopico = new Map<string, string[]>();
+  for (const l of linhasFT) {
+    const lista = fichasPorTopico.get(l.topico_id) ?? [];
+    lista.push(l.ficha_id);
+    fichasPorTopico.set(l.topico_id, lista);
+  }
   const topicosFichas = yield* Effect.try({
-    try: () => topicosFichasDeObjetos(linhasTop.map((l) => l.dados_json)),
+    try: () =>
+      topicosFichasDeObjetos(linhasTop.map((l) => l.dados_json)).map((t) => ({
+        ...t,
+        fichas: fichasPorTopico.get(t.id) ?? [...(t.fichas ?? [])],
+      })),
     catch: falhaDaTabela("revisao_ppc_topicos"),
   });
   const linhasTS = yield* linhasTopicosSecoes(

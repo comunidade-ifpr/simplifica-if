@@ -2,15 +2,14 @@
   "id": "CT-SUP-16",
   "titulo": "Quantitativo e disponibilidade docente sustentam a oferta",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: contagem do quadro docente × CH da matriz."
   },
   "topicos_tematicos": [
     "corpo_docente_gestao"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Quantitativo e disponibilidade docente sustentam a oferta",
     "Corpo docente, equipe técnica e gestão do curso",
@@ -45,9 +44,9 @@
   "escalonar_quando": "Escalonar se o PPC listar docentes, mas a suficiência quantitativa ou a disponibilidade para manter a oferta permanecerem incertas.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

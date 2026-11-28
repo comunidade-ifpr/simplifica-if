@@ -14,6 +14,7 @@ import {
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Normas from "@simplifica-if/kb/Normas";
 import * as PacoteRevisaoPpc from "@simplifica-if/kb/PacoteRevisaoPpc";
+import { ehModoExecucao, type ModoExecucao } from "@simplifica-if/kb/revisao-ppc/constantes";
 import * as ListaViva from "./ListaViva.ts";
 
 const texto = (valor: unknown): string | null =>
@@ -115,7 +116,7 @@ const make = Effect.gen(function* () {
       .pipe(Effect.mapError(() => falha("Não foi possível ler os critérios da revisão na base.")));
     if (dados === undefined || dados.id !== id) return yield* falha(`O critério ${id} não está na base.`);
     const execucao = objeto(dados["execucao"]);
-    const modo = execucao["modo"] === "D" || execucao["modo"] === "S" ? execucao["modo"] : "J";
+    const modo: ModoExecucao = ehModoExecucao(execucao["modo"]) ? execucao["modo"] : "tematico";
     const topicos = lista(dados["topicos_tematicos"]).filter((t): t is string => typeof t === "string");
     const secoes = topicos.flatMap((t) => {
       const titulo = fontes.topicosFichas.find((topico) => topico.id === t)?.titulo;

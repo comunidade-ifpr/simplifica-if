@@ -2,15 +2,14 @@
   "id": "CT-CURR-14",
   "titulo": "Projeto final, TCC/TFC ou componente equivalente disciplinado quando previsto",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: aplicabilidade em código (PFI/TCC na matriz); caracterização é julgamento."
   },
   "topicos_tematicos": [
     "aproveitamento_certificacao_tfc"
   ],
-  "tipo_escopo": "condicional",
   "ancoras_semanticas": [
     "Projeto final, TCC/TFC ou componente equivalente disciplinado quando previsto",
     "Aproveitamento, certificação intermediária e trabalho final",
@@ -75,9 +74,9 @@
   "escalonar_quando": "Escalonar se o PPC mencionar projeto final, PFI, Projeto Integrador, TFC ou TCC, mas a descrição ficar incompleta em aspectos centrais como carga horária, orientação, produto, avaliação, responsabilidades ou relação com a prática profissional; ou se houver dúvida se a atividade é prática profissional articulada ou TCC acadêmico tradicional.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

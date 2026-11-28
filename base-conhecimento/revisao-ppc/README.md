@@ -6,19 +6,20 @@ O kb compila as fichas, os tópicos e os marcos no `kb.sqlite` (`pnpm kb:compila
 
 ## Estrutura
 
-- `fichas/`: um JSON por ficha (`ct-*.json`), com pergunta, rubrica, evidências, referências normativas, estados permitidos e o modo de execução no app.
-- `topicos-fichas.json`: a taxonomia semântica que organiza as fichas por tema, sem depender da numeração do PPC. Cada tópico lista as suas fichas; os tipos de seção do PPC de cada tópico estão em `packages/kb/dados/topicos-secoes.yaml`.
+- `fichas/`: um JSON por ficha (`ct-*.json`), com pergunta, rubrica, evidências, referências normativas, criticidade (`bloqueante`, `obrigatorio`, `recomendado`), estados permitidos (`atende`, `nao_atende`, `a_conferir`, `nao_se_aplica`) e o modo de execução no app.
+- `topicos.json`: a taxonomia semântica que organiza os tópicos das fichas por tema, sem depender da numeração do PPC, incluindo os tipos de seção do PPC de cada tópico (`secoes`). A ligação tópico ↔ ficha é derivada de `topicos_tematicos` de cada ficha.
 - `marcos-normativos.json`: os temas normativos (DCN da EPT, DCNEM, EJA, assistência estudantil). Cada um traz a identificação (`id`, `tema`, `linha` com os atos do tema por ID canônico, `aplica_a`, fichas), a regra de transição e a orientação de análise. A norma vigente, as substituídas, as antecessoras e os dispositivos revogados são derivados de `base-conhecimento/relacoes.yaml` na leitura.
 
-Os contratos da ficha e dos marcos vivem em Effect Schema em `scripts/base/revisao-ppc/esquemas.ts` e são conferidos por `validar_base.ts`.
+Os contratos da ficha, dos tópicos e dos marcos vivem em Effect Schema em `scripts/base/revisao-ppc/esquemas.ts` (usando o vocabulário único de `packages/kb/src/revisao-ppc/constantes.ts`) e são conferidos por `validar_base.ts`.
 
-## Execução no app (D, S, J)
+## Execução no app (`hibrido`, `focal`, `tematico`, `transversal`)
 
 Cada ficha declara `execucao: { modo, justificativa }`. A justificativa diz o que o código usa e o que sobra para a IA.
 
-- **D**: o código decide com a base, sem IA. Cada ficha D tem um verificador registrado em `packages/ppc/src/verificadores/registro.ts`.
-- **S**: o código acha o trecho pelas `consultas` e `ancoras_semanticas` da ficha e decide a aplicabilidade; a IA confirma numa resposta curta.
-- **J**: a IA julga as seções do tema, que vêm dos `topicos_tematicos` da ficha. As de `tipo_escopo: transversal` vão numa sessão no fim, sobre os resumos dos temas e o recorte das seções dos tópicos delas.
+- **`hibrido`**: o app confere primeiro em código na pré-conferência; se não conseguir concluir (extração ou ambiguidade), a ficha é escalada para a IA analisar o trecho. Cada ficha `hibrido` tem um verificador registrado em `packages/ppc/src/verificadores/registro.ts`.
+- **`focal`**: o app localiza os trechos relevantes no PPC pelas `consultas` e `ancoras_semanticas` da ficha e a IA confirma o que eles dizem em lotes curtos.
+- **`tematico`**: a IA julga as seções inteiras do tema, que vêm dos `topicos_tematicos` da ficha; o app confere o trecho e as normas citadas.
+- **`transversal`**: a IA cruza os resumos dos temas e os recortes no fim da revisão para conferir a coerência entre seções.
 
 Os verificadores, o estado `a_conferir` de tudo o que depende de extração e a precisão medida nos PPCs técnicos da base estão no [README do `packages/ppc`](../../packages/ppc/README.md#pré-conferência-sem-ia-fichas-d). Passar uma ficha para D é uma mudança versionada: o verificador, o registro e os casos de teste entram no mesmo commit.
 

@@ -189,7 +189,7 @@ export function conferirResposta(
     return { validos, problemas, resumo: null };
   }
   const resumo = casca.success.resumo?.trim() || null;
-  if (bloco.tipo === "J" && !resumo) adicionar(problemas, "*", "falta o `resumo` do tema");
+  if (bloco.tipo === "tematico" && !resumo) adicionar(problemas, "*", "falta o `resumo` do tema");
   const porId = new Map(fichas.map((f) => [f.id, f]));
   for (const item of casca.success.resultados) {
     const id = (item as { ficha_id?: unknown } | null)?.ficha_id;
@@ -219,7 +219,7 @@ export function conferirResposta(
     // O `tipo_achado` só vale no critério `ausencia` e num NAO_ATENDE; a revisão humana não vem da IA.
     const { tipo_achado: tipoAchado, ...semTipo } = decodificado.success;
     const r: ResultadoIa =
-      criterio === "ausencia" && tipoAchado && semTipo.estado === "NAO_ATENDE"
+      criterio === "ausencia" && tipoAchado && semTipo.estado === "nao_atende"
         ? { ...semTipo, tipo_achado: tipoAchado }
         : semTipo;
     const erros: string[] = [];
@@ -239,21 +239,21 @@ export function conferirResposta(
     });
     for (const fonte of r.fontes ?? [])
       if (!fonteValida(fonte, entrada.fontes)) erros.push(fonteParaCorrecao(fonte, entrada.fontes));
-    if (r.estado === "ATENDE" && conferidas === 0) erros.push("ATENDE sem trecho do PPC");
-    if (r.estado === "NAO_ATENDE" && conferidas === 0)
-      erros.push("NAO_ATENDE sem trecho do PPC: cite o trecho da seção lida que mostra o problema ou a falta");
-    if (criterio === "ausencia" && r.estado === "NAO_ATENDE") {
+    if (r.estado === "atende" && conferidas === 0) erros.push("atende sem trecho do PPC");
+    if (r.estado === "nao_atende" && conferidas === 0)
+      erros.push("nao_atende sem trecho do PPC: cite o trecho da seção lida que mostra o problema ou a falta");
+    if (criterio === "ausencia" && r.estado === "nao_atende") {
       if (!r.tipo_achado)
-        erros.push("NAO_ATENDE sem `tipo_achado`: use ausencia_em_secao_presente, contradicao ou merito");
+        erros.push("nao_atende sem `tipo_achado`: use ausencia_em_secao_presente, contradicao ou merito");
       else if (r.tipo_achado === "ausencia_em_secao_presente") {
         if (!r.lacunas.some((l) => l.trim()))
-          erros.push("NAO_ATENDE por ausência sem `lacunas`: diga o que falta na seção lida");
+          erros.push("nao_atende por ausência sem `lacunas`: diga o que falta na seção lida");
         // A prova de leitura é da seção do critério, não do comum do bloco (quadro, matriz) nem de um
         // aviso de seção não achada: sem a seção no recorte, a ausência não se prova.
         const secao = entrada.secaoDaFicha?.(fichaId);
         if (secao === null)
           erros.push(
-            "NAO_ATENDE por ausência sem a seção no recorte: o código não achou a seção deste critério; use INCONCLUSIVO",
+            "nao_atende por ausência sem a seção no recorte: o código não achou a seção deste critério; use a_conferir",
           );
         else if (
           secao !== undefined &&
@@ -261,7 +261,7 @@ export function conferirResposta(
           !conferidosNoAlvo.some((t) => trechoExiste(t, secao))
         )
           erros.push(
-            "NAO_ATENDE por ausência com trecho fora da seção do critério: cite a seção lida (o recorte deste critério ou as seções do tema), não o quadro de identificação nem a matriz",
+            "nao_atende por ausência com trecho fora da seção do critério: cite a seção lida (o recorte deste critério ou as seções do tema), não o quadro de identificação nem a matriz",
           );
       }
     }
@@ -289,11 +289,11 @@ export function pedidoDeCorrecao(conferencia: Conferencia): string {
 export function motivoLegivel(erros: readonly string[]): string {
   if (erros.some((e) => e.startsWith("trecho"))) return "a IA citou um trecho que não está no documento";
   if (erros.some((e) => e.startsWith("fonte"))) return "a IA citou uma norma que não estava entre as consultadas";
-  if (erros.some((e) => e.startsWith("ATENDE"))) return "a IA disse que atende sem mostrar o trecho";
-  if (erros.some((e) => e.startsWith("NAO_ATENDE por ausência sem a seção") || e.includes("fora da seção do critério")))
+  if (erros.some((e) => e.startsWith("atende"))) return "a IA disse que atende sem mostrar o trecho";
+  if (erros.some((e) => e.startsWith("nao_atende por ausência sem a seção") || e.includes("fora da seção do critério")))
     return "a IA apontou uma falta sem mostrar a seção do documento onde ela devia estar";
-  if (erros.some((e) => e.startsWith("NAO_ATENDE sem `tipo_achado`") || e.startsWith("NAO_ATENDE por ausência")))
+  if (erros.some((e) => e.startsWith("nao_atende sem `tipo_achado`") || e.startsWith("nao_atende por ausência")))
     return "a IA apontou um problema sem dizer o tipo ou o que falta";
-  if (erros.some((e) => e.startsWith("NAO_ATENDE"))) return "a IA apontou um problema sem mostrar o trecho";
+  if (erros.some((e) => e.startsWith("nao_atende"))) return "a IA apontou um problema sem mostrar o trecho";
   return "a resposta da IA veio fora do formato esperado";
 }

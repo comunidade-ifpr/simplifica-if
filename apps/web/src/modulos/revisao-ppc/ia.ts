@@ -131,7 +131,7 @@ export interface LinhaAndamento {
   readonly criterios: ReadonlyArray<string>;
 }
 
-const tituloDoBloco = (b: BlocoRevisaoIa) => (b.tipo === "T" ? "Critérios transversais" : b.tema);
+const tituloDoBloco = (b: BlocoRevisaoIa) => (b.tipo === "transversal" ? "Critérios transversais" : b.tema);
 
 /**
  * As linhas do painel "Ver andamento", na ordem do parecer: pronto (tempo e pontos encontrados), lendo

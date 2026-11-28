@@ -2,15 +2,14 @@
   "id": "CT-SUP-22",
   "titulo": "Infraestrutura mínima CNCT atendida ou justificada",
   "dominio": "suporte",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: itens de infraestrutura mínima do CNCT × seção de infraestrutura; a IA confirma equivalências."
   },
   "topicos_tematicos": [
     "infraestrutura"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Infraestrutura mínima CNCT atendida ou justificada",
     "Infraestrutura, laboratórios e acervo",
@@ -51,9 +50,9 @@
   "escalonar_quando": "Escalonar se parte da infraestrutura mínima estiver presente, mas houver dúvida sobre equivalência, suficiência, disponibilidade efetiva ou compartilhamento de laboratórios.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

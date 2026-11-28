@@ -2,15 +2,14 @@
   "id": "CT-IDENT-12",
   "titulo": "Perfil do egresso redigido com clareza e especificidade",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: clareza do perfil."
   },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Perfil do egresso redigido com clareza e especificidade",
     "Perfil do egresso, competências e mundo do trabalho",
@@ -42,9 +41,9 @@
   "escalonar_quando": "Escalonar se o perfil parecer pertinente, mas ainda ambíguo ou pouco operacional para caracterizar a formação esperada.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

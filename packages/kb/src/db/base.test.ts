@@ -613,7 +613,10 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           [...mapa].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
         mesmoJson(banco.sinonimos, lerSinonimos(raiz));
         mesmoJson(banco.topicosSecoes, lerTopicosSecoes(raiz));
-        mesmoJson(banco.topicosFichas, lerTopicosFichas(raiz));
+        mesmoJson(
+          banco.topicosFichas.map(({ fichas: _, ...t }) => t),
+          lerTopicosFichas(raiz),
+        );
         mesmoJson(banco.registro.entradas, carregarRegistro(raiz).entradas);
         mesmoJson(ordenado(banco.datas), ordenado(vigenciaArquivos.datas));
         mesmoJson(banco.relacoes, vigenciaArquivos.relacoes);
@@ -775,7 +778,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           const esperados = [
             ...fichas,
             "base-conhecimento/revisao-ppc/marcos-normativos.json",
-            "base-conhecimento/revisao-ppc/topicos-fichas.json",
+            "base-conhecimento/revisao-ppc/topicos.json",
           ].sort();
           expect(arquivos.map((a) => a.arquivo)).toEqual(esperados);
           for (const { arquivo, texto } of arquivos) mesmoJson(JSON.parse(texto), yield* lerJson(arquivo));

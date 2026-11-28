@@ -364,7 +364,9 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
    */
   const etapa = (e: EtapaBlocoIa) => (entrada.aoEtapa ? entrada.aoEtapa(e) : Effect.void);
   const assunto =
-    entrada.bloco.tipo === "T" ? "os critérios transversais" : `o tema “${entrada.bloco.tema}” (${entrada.bloco.id})`;
+    entrada.bloco.tipo === "transversal"
+      ? "os critérios transversais"
+      : `o tema “${entrada.bloco.tema}” (${entrada.bloco.id})`;
   const tentativa = (texto: string) => {
     numero += 1;
     return turnoSemFerramentas({

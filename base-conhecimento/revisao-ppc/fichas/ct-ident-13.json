@@ -2,15 +2,14 @@
   "id": "CT-IDENT-13",
   "titulo": "Eixo tecnológico compatível com o CNCT",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Eixo tecnológico declarado contra o do CNCT; a divergência sai a conferir (abreviações e texto colado pela conversão)."
   },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Eixo tecnológico compatível com o CNCT",
     "Identificação e características da oferta",
@@ -53,9 +52,9 @@
   "escalonar_quando": "Escalonar se o PPC não declarar eixo tecnológico, se houver divergência do eixo em relação ao CNCT, se a correspondência CNCT estiver incerta, ou se o PPC declarar área tecnológica incompatível. Não escalonar pela simples ausência de área tecnológica no PPC.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

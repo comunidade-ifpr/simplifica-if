@@ -2,15 +2,14 @@
   "id": "CT-IDENT-06",
   "titulo": "Formação integral e princípios norteadores",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: formação integral."
   },
   "topicos_tematicos": [
     "concepcao_metodologias"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Formação integral e princípios norteadores",
     "Concepção pedagógica e metodologias",
@@ -44,9 +43,9 @@
   "escalonar_quando": "Escalonar se os princípios forem citados, mas sem concretização suficiente.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

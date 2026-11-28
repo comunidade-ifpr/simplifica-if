@@ -10,7 +10,7 @@ justificativa_escolha: >-
   profissional (CFTA), acompanhamento de egressos com seção própria e base legal com normas revogadas.
 achados:
   - ficha: CT-IDENT-01
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: A denominação coincide com a habilitação "Técnico em Agropecuária" do CNCT.
     evidencias:
       - trecho: Técnico em Agropecuária
@@ -22,7 +22,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-13
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: O eixo declarado (Recursos Naturais) é o eixo do curso no CNCT.
     evidencias:
       - trecho: Recursos Naturais
@@ -34,7 +34,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-02
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       3.200 h em 3 anos (1.200 h técnicas, 1.800 h de formação básica e 200 h complementares): acima de
       3.000 h (art. 29, § 2º), com as 1.200 h do CNCT na parte técnica e dentro do teto de 10% da
@@ -52,7 +52,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-16
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: Exige ensino fundamental completo, como o CNCT para o integrado.
     evidencias:
       - trecho: Ensino Fundamental completo e aprovação no processo seletivo regulamentado pela Pró-Reitoria de Ensino
@@ -63,7 +63,7 @@ achados:
     status: rascunho
 
   - ficha: CT-CURR-20
-    estado_esperado: INCONCLUSIVO
+    estado_esperado: a_conferir
     justificativa: >-
       A identificação diz que o estágio obrigatório "não se aplica" (o CNCT deixa a critério da
       instituição), mas as atribuições da coordenação falam em orientar o "estágio obrigatório" e o PPC não
@@ -79,7 +79,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-08
-    estado_esperado: NAO_ATENDE
+    estado_esperado: nao_atende
     justificativa: >-
       A base legal cita a DCN da EPT como "Resolução CNE/CEB nº 1/2021" (órgão trocado; a CNE/CP nº 1/2021
       foi revogada pela CNE/CP nº 2/2026), a Res. CNE/CEB nº 3/2018 (revogada pela CNE/CEB nº 2/2024) e a
@@ -98,7 +98,7 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-18
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       Seção 4.3 vincula o acompanhamento à Política de Acompanhamento de Egressos do IFPR e prevê
       questionários às turmas concluintes e banco de dados de egressos. O prazo de dois anos do art. 28,
@@ -109,7 +109,7 @@ achados:
     status: rascunho
 
   - ficha: CT-SUP-21
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: >-
       Cita a Lei nº 5.524/1968, o Decreto nº 90.922/1985 (com as alterações do Decreto nº 4.560/2002) e a
       Lei nº 13.639/2018 (CFTA), indicados no CNCT. Falta a Portaria MT nº 3.156/1987.
@@ -124,14 +124,14 @@ achados:
     status: rascunho
 
   - ficha: CT-IDENT-15
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: O diploma explicita a habilitação e o eixo tecnológico do CNCT.
     evidencias:
       - trecho: Diploma de Técnico em Agropecuária, do Eixo Tecnológico Recursos Naturais e histórico escolar de conclusão do ensino médio.
     status: rascunho
 
   - ficha: CT-CURR-22
-    estado_esperado: ATENDE
+    estado_esperado: atende
     justificativa: O AEE é descrito como atendimento no contraturno, não como componente da matriz.
     evidencias:
       - trecho: O campus também oferta o Atendimento Educacional Especializado (AEE), ministrado por professor de educação especial, voltado para a complementação e suplementação do ensino ministrado em sala de aula regular e oferecido durante o contraturno.

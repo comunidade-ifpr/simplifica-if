@@ -2,15 +2,14 @@
   "id": "CT-IDENT-16",
   "titulo": "Forma de ingresso e política institucional de acesso explicitadas",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: termos de processo seletivo, reserva de vagas, Res. 190/2024."
   },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Forma de ingresso e política institucional de acesso explicitadas",
     "Identificação e características da oferta",
@@ -72,9 +71,9 @@
   "escalonar_quando": "Escalonar se o PPC mencionar processo seletivo ou edital, mas não deixar claro se se trata de acesso unificado, simplificado ou outra hipótese admitida; se a referência à política de reserva de vagas estiver vaga; ou se o texto atribuir indevidamente à Resolução IFPR nº 190/2024 regras que dependem de outra norma específica.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

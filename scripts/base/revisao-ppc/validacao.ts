@@ -8,17 +8,7 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import {
-  ehObjeto,
-  itensDe,
-  itensPercorridos,
-  type ObjetoJson,
-  representar,
-  textoDe,
-  textoOuVazio,
-} from "@simplifica-if/kb/json";
-import { CAMINHOS, noCheckout } from "@simplifica-if/kb/caminhos";
-import { lerTopicosSecoes } from "@simplifica-if/kb/ppcs/topicos";
+import { ehObjeto, itensDe, itensPercorridos, type ObjetoJson, textoDe, textoOuVazio } from "@simplifica-if/kb/json";
 import { ehIdDispositivo, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
 import {
   type FonteReferencia,
@@ -60,8 +50,6 @@ function marcosDerivados(marcos: readonly ObjetoJson[], derivar: Derivacao): Mar
   return saida;
 }
 
-const TIPOS_ESCOPO_TOPICO = new Set(["tematico", "multitematico", "transversal", "condicional"]);
-
 /** Resultado da leitura de um JSON: o valor ou a mensagem do erro de sintaxe. */
 function tentarLerJson(caminho: string): { valor: unknown } | { erro: string } {
   try {
@@ -81,36 +69,7 @@ function textoAparado(valor: unknown): string {
   return aparar(textoOuVazio(valor));
 }
 
-function conjuntoOrdenado(valores: Iterable<string>): string {
-  return representar(ordenarTextos(new Set(valores)));
-}
-
-/**
- * Confere o mapa tópico → tipos de seção do kb (`packages/kb/dados/topicos-secoes.yaml`), que decide
- * as seções do PPC que cada tema recebe na revisão com IA: todo tópico da taxonomia tem uma entrada
- * (lista vazia vale) e toda entrada é um tópico.
- */
-export function validarTopicosSecoes(idsTopicos: ReadonlySet<string>, caminhos: CaminhosRevisaoPpc): string[] {
-  const raiz = caminhos.raiz;
-  const arquivo = noCheckout(raiz, CAMINHOS.topicosSecoes);
-  if (!NodeFS.existsSync(arquivo)) return [`${arquivo}: arquivo não encontrado`];
-  let mapa: Readonly<Record<string, ReadonlyArray<string>>>;
-  try {
-    mapa = lerTopicosSecoes(raiz);
-  } catch (erro) {
-    return [`${arquivo}: inválido: ${erro instanceof Error ? erro.message : String(erro)}`];
-  }
-  const erros: string[] = [];
-  for (const id of ordenarTextos([...idsTopicos].filter((id) => !Object.hasOwn(mapa, id)))) {
-    erros.push(`${arquivo}: tópico sem tipos de seção: ${id}`);
-  }
-  for (const id of ordenarTextos(Object.keys(mapa).filter((id) => !idsTopicos.has(id)))) {
-    erros.push(`${arquivo}: tópico desconhecido: ${id}`);
-  }
-  return erros;
-}
-
-/** Confere `topicos-fichas.json` contra as fichas e os `topicos_tematicos` de cada ficha. */
+/** Confere `topicos.json` (contrato e IDs únicos) contra os `topicos_tematicos` de cada ficha. */
 export function validarTopicosFichas(
   fichasPorId: Map<string, Ficha>,
   caminhos: CaminhosRevisaoPpc = caminhosRevisaoPpc(),
@@ -119,56 +78,17 @@ export function validarTopicosFichas(
   if (!NodeFS.existsSync(arquivo)) return [`${arquivo}: arquivo de taxonomia não encontrado`];
   const lido = tentarLerJson(arquivo);
   if ("erro" in lido) return [`${arquivo}: JSON inválido: ${lido.erro}`];
-  if (!ehObjeto(lido.valor)) return [`${arquivo}: payload deve ser objeto JSON`];
-  const topicos = lido.valor.topicos;
-  if (!Array.isArray(topicos) || topicos.length === 0) {
-    return [`${arquivo}: campo \`topicos\` deve ser lista não vazia`];
-  }
+  const erros = errosDeContrato(arquivo, "topicos", lido.valor);
+  const topicos = ehObjeto(lido.valor) && Array.isArray(lido.valor.topicos) ? lido.valor.topicos : [];
 
-  const erros: string[] = [];
   const idsTopicos = new Set<string>();
-  const fichasCobertas = new Set<string>();
-  topicos.forEach((topico, posicao) => {
-    const indice = posicao + 1;
-    if (!ehObjeto(topico)) {
-      erros.push(`${arquivo}: tópico ${indice} deve ser objeto JSON`);
-      return;
-    }
+  topicos.forEach((topico) => {
+    if (!ehObjeto(topico)) return;
     const topicoId = textoAparado(topico.id);
-    const rotulo = topicoId || String(indice);
-    if (!topicoId) erros.push(`${arquivo}: tópico ${indice} sem id`);
-    else if (idsTopicos.has(topicoId)) erros.push(`${arquivo}: tópico duplicado: ${topicoId}`);
+    if (!topicoId) return;
+    if (idsTopicos.has(topicoId)) erros.push(`${arquivo}: tópico duplicado: ${topicoId}`);
     idsTopicos.add(topicoId);
-    for (const campo of ["titulo", "descricao", "tipo_escopo"]) {
-      if (!textoAparado(topico[campo])) erros.push(`${arquivo}: tópico ${rotulo} sem \`${campo}\``);
-    }
-    const tipoEscopo = textoOuVazio(topico.tipo_escopo);
-    if (tipoEscopo && !TIPOS_ESCOPO_TOPICO.has(tipoEscopo)) {
-      erros.push(`${arquivo}: tópico ${rotulo} tem tipo_escopo inválido: ${tipoEscopo}`);
-    }
-    for (const campo of ["aliases_titulo", "termos_busca", "fichas"]) {
-      const valores = topico[campo];
-      if (!Array.isArray(valores)) {
-        erros.push(`${arquivo}: tópico ${rotulo} deve ter \`${campo}\` como lista`);
-        continue;
-      }
-      if ((campo === "aliases_titulo" || campo === "termos_busca") && valores.length === 0) {
-        erros.push(`${arquivo}: tópico ${rotulo} deve ter \`${campo}\` não vazio`);
-      }
-      if (campo === "fichas") {
-        if (valores.length === 0) erros.push(`${arquivo}: tópico ${rotulo} deve citar ao menos uma ficha`);
-        for (const valor of valores) {
-          const fichaId = textoDe(valor);
-          if (!fichasPorId.has(fichaId)) erros.push(`${arquivo}: tópico ${rotulo} cita ficha desconhecida: ${fichaId}`);
-          fichasCobertas.add(fichaId);
-        }
-      }
-    }
   });
-
-  const faltantes = ordenarTextos([...fichasPorId.keys()].filter((fichaId) => !fichasCobertas.has(fichaId)));
-  if (faltantes.length) erros.push(`${arquivo}: fichas sem tópico temático: ${faltantes.join(", ")}`);
-  erros.push(...validarTopicosSecoes(idsTopicos, caminhos));
 
   for (const fichaId of ordenarTextos(fichasPorId.keys())) {
     const ficha = fichasPorId.get(fichaId)!;
@@ -180,20 +100,6 @@ export function validarTopicosFichas(
     const declarados = new Set(topicosFicha.map((valor) => textoDe(valor)));
     const desconhecidos = ordenarTextos([...declarados].filter((valor) => !idsTopicos.has(valor)));
     if (desconhecidos.length) erros.push(`${fichaId}: tópicos desconhecidos: ${desconhecidos.join(", ")}`);
-    const esperados = new Set(
-      topicos
-        .filter(
-          (topico) => ehObjeto(topico) && itensPercorridos(topico.fichas).some((valor) => textoDe(valor) === fichaId),
-        )
-        .map((topico) => textoDe((topico as ObjetoJson).id)),
-    );
-    const iguais = declarados.size === esperados.size && [...declarados].every((valor) => esperados.has(valor));
-    if (!iguais) {
-      erros.push(
-        `${fichaId}: topicos_tematicos divergente da taxonomia ` +
-          `(ficha=${conjuntoOrdenado(declarados)}, taxonomia=${conjuntoOrdenado(esperados)})`,
-      );
-    }
     const ancoras = ficha.ancoras_semanticas;
     if (!Array.isArray(ancoras) || !ancoras.some((valor) => aparar(textoDe(valor)))) {
       erros.push(`${fichaId}: \`ancoras_semanticas\` deve ser lista não vazia`);
@@ -382,9 +288,9 @@ export function validarMarcosNormativos(
 }
 
 /**
- * `execucao` contra o registro de verificadores de `packages/ppc` (M1.11): toda ficha D tem
- * verificador registrado, e todo verificador registrado é de uma ficha D da base. A ausência do
- * campo e o modo fora de D/S/J o schema já recusa.
+ * `execucao` contra o registro de verificadores de `packages/ppc`: toda ficha `hibrido` tem
+ * verificador registrado, e todo verificador registrado é de uma ficha `hibrido` da base. A ausência
+ * do campo e o modo fora do enum o schema já recusa.
  */
 export function validarExecucaoFichas(
   fichasPorId: ReadonlyMap<string, Ficha>,
@@ -394,13 +300,30 @@ export function validarExecucaoFichas(
   const modo = (ficha: Ficha | undefined) =>
     ficha && ehObjeto(ficha.execucao) ? textoOuVazio(ficha.execucao.modo) : "";
   for (const [id, ficha] of fichasPorId)
-    if (modo(ficha) === "D" && !verificadores.has(id))
-      erros.push(`${id}: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts`);
-  for (const [id, verificador] of verificadores)
-    if (modo(fichasPorId.get(id)) !== "D")
+    if (modo(ficha) === "hibrido" && !verificadores.has(id))
       erros.push(
-        `verificador ${verificador.id}: registrado para ${id}, que ${fichasPorId.has(id) ? "não é ficha D" : "não existe na base"}`,
+        `${id}: execucao.modo hibrido sem verificador registrado em packages/ppc/src/verificadores/registro.ts`,
       );
+  for (const [id, verificador] of verificadores)
+    if (modo(fichasPorId.get(id)) !== "hibrido")
+      erros.push(
+        `verificador ${verificador.id}: registrado para ${id}, que ${fichasPorId.has(id) ? "não é ficha hibrido" : "não existe na base"}`,
+      );
+  return erros;
+}
+
+const RE_VOCABULARIO_ANTIGO = /\b(?:ATENDE|NAO_ATENDE|INCONCLUSIVO|NAO_APLICAVEL|BLOQ|OBRIG)\b/;
+
+/** Recusa siglas/estados antigos em maiúsculas nos textos que vão ao prompt da IA. */
+function validarVocabularioTexto(origem: string, campos: Readonly<Record<string, unknown>>): string[] {
+  const erros: string[] = [];
+  for (const [campo, valor] of Object.entries(campos)) {
+    if (typeof valor !== "string") continue;
+    const achado = RE_VOCABULARIO_ANTIGO.exec(valor);
+    if (achado) {
+      erros.push(`${origem}: \`${campo}\` usa termo antigo \`${achado[0]}\`; use o vocabulário em minúsculas`);
+    }
+  }
   return erros;
 }
 
@@ -424,6 +347,7 @@ export function validarRevisaoPpc(
     const payload = ehObjeto(lido.valor) ? lido.valor : {};
     const fichaId = textoOuVazio(payload.id);
     if (fichasPorId.has(fichaId)) erros.push(`${arquivo}: ficha duplicada: ${fichaId}`);
+    erros.push(...validarVocabularioTexto(fichaId || arquivo, payload));
     fichasPorId.set(fichaId, payload);
   }
   erros.push(...validarTopicosFichas(fichasPorId, caminhos));

@@ -2,15 +2,14 @@
   "id": "CT-CURR-17",
   "titulo": "Itinerários formativos coerentes com o CNCT",
   "dominio": "curriculo",
-  "criticidade": "REC",
+  "criticidade": "recomendado",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: itinerários do CNCT × termos do PPC."
   },
   "topicos_tematicos": [
     "aproveitamento_certificacao_tfc"
   ],
-  "tipo_escopo": "condicional",
   "ancoras_semanticas": [
     "Itinerários formativos coerentes com o CNCT",
     "Aproveitamento, certificação intermediária e trabalho final",
@@ -75,9 +74,9 @@
   "escalonar_quando": "Escalonar se houver menção a itinerários ou verticalização, mas a relação com o campo CNCT permanecer vaga ou contraditória.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

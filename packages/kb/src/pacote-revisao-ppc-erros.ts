@@ -31,7 +31,7 @@ export class CriteriosNaoEncontrados extends Schema.TaggedError<CriteriosNaoEnco
       case "id":
         return `critério não encontrado: "${this.valor}". Use o ID da ficha, como "CT-CURR-12"`;
       case "topico":
-        return `tópico sem critérios: "${this.valor}". Use um tópico de topicos-fichas.json, como "estagio"`;
+        return `tópico sem critérios: "${this.valor}". Use um tópico de topicos.json, como "estagio"`;
       case "norma":
         return `norma não encontrada na base: "${this.valor}". Use o ID canônico, como "br/cne-cp/res/2021/1"`;
       default:

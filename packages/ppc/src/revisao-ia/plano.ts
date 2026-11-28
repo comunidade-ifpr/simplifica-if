@@ -18,6 +18,7 @@
  * Tudo aqui é função pura sobre dados planos: o servidor busca as fichas, as seções e o contexto
  * normativo no `kb.sqlite` e grava o plano, para que a revisão retome sem refazê-lo.
  */
+import { ehModoExecucao, type ModoExecucao } from "@simplifica-if/kb/revisao-ppc/constantes";
 import { TEMAS, ordemDoTema } from "../temas.ts";
 import { ESTADOS_IA } from "./resposta.ts";
 
@@ -26,8 +27,7 @@ export type FichaIa = {
   id: string;
   titulo: string;
   criticidade: string;
-  modo: "D" | "S" | "J";
-  tipo_escopo: string;
+  modo: ModoExecucao;
   topicos: string[];
   pergunta: string;
   rubrica: string;
@@ -44,13 +44,12 @@ export function fichaIa(json: Record<string, unknown>): FichaIa {
   const texto = (v: unknown) => (typeof v === "string" ? v : "");
   const lista = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []);
   const execucao = (json["execucao"] ?? {}) as { modo?: unknown };
-  const modo = execucao.modo === "D" || execucao.modo === "S" || execucao.modo === "J" ? execucao.modo : "J";
+  const modo: ModoExecucao = ehModoExecucao(execucao.modo) ? execucao.modo : "tematico";
   return {
     id: texto(json["id"]),
     titulo: texto(json["titulo"]),
     criticidade: texto(json["criticidade"]),
     modo,
-    tipo_escopo: texto(json["tipo_escopo"]),
     topicos: lista(json["topicos_tematicos"]),
     pergunta: texto(json["pergunta"]),
     rubrica: texto(json["rubrica"]),
@@ -63,10 +62,10 @@ export function fichaIa(json: Record<string, unknown>): FichaIa {
 }
 
 export type ModoRevisaoIa = "rapido" | "completo";
-export type TipoBloco = "S" | "J" | "T";
+export type TipoBloco = "focal" | "tematico" | "transversal";
 
 export type Bloco = {
-  /** `s-02-1` (tema 2, primeiro lote S), `j-02` (tema 2), `t` (transversais). */
+  /** `focal-02-1` (tema 2, primeiro lote focal), `tematico-02` (tema 2), `transversal` (transversais). */
   id: string;
   tipo: TipoBloco;
   tema: string;
@@ -83,41 +82,63 @@ export const TEMAS_RAPIDO: readonly string[] = [
 
 export const TAMANHO_LOTE_S = 6;
 
-/** As fichas que a IA avalia no modo: nunca as D; no rápido, as `BLOQ` e as dos `TEMAS_RAPIDO`. */
-export function fichasDoModo(fichas: readonly FichaIa[], modo: ModoRevisaoIa): FichaIa[] {
+/**
+ * As fichas que a IA avalia no modo: as `hibrido` só entram quando escaladas pela pré-conferência
+ * (`escaladas`); no rápido, as `bloqueante`, as dos `TEMAS_RAPIDO` e as `hibrido` escaladas.
+ */
+export function fichasDoModo(
+  fichas: readonly FichaIa[],
+  modo: ModoRevisaoIa,
+  escaladas?: ReadonlySet<string>,
+): FichaIa[] {
   return fichas.filter((f) => {
-    if (f.modo === "D") return false;
+    if (f.modo === "hibrido") return escaladas?.has(f.id) ?? false;
     if (modo === "completo") return true;
-    return f.criticidade === "BLOQ" || TEMAS_RAPIDO.includes(TEMAS[ordemDoTema(f.topicos)]!.titulo);
+    return f.criticidade === "bloqueante" || TEMAS_RAPIDO.includes(TEMAS[ordemDoTema(f.topicos)]!.titulo);
   });
 }
 
-const ehTransversal = (f: FichaIa) => f.tipo_escopo === "transversal";
+const ehTransversal = (f: FichaIa) => f.modo === "transversal";
 
-/** Os blocos na ordem do parecer: em cada tema, os lotes S e depois o J; as transversais no fim. */
-export function planejarBlocos(fichas: readonly FichaIa[], modo: ModoRevisaoIa, tamanhoLote = TAMANHO_LOTE_S) {
-  const doModo = fichasDoModo(fichas, modo);
+/**
+ * Os blocos na ordem do parecer: em cada tema, os lotes `focal` (incluindo fichas `hibrido` escaladas)
+ * e depois o `tematico`; os `transversal` no fim.
+ */
+export function planejarBlocos(
+  fichas: readonly FichaIa[],
+  modo: ModoRevisaoIa,
+  tamanhoLote = TAMANHO_LOTE_S,
+  escaladas?: ReadonlySet<string>,
+) {
+  const doModo = fichasDoModo(fichas, modo, escaladas);
   const blocos: Bloco[] = [];
   const dois = (n: number) => String(n).padStart(2, "0");
   TEMAS.forEach((tema, ordemTema) => {
     const doTema = doModo.filter((f) => !ehTransversal(f) && ordemDoTema(f.topicos) === ordemTema);
-    const s = doTema.filter((f) => f.modo === "S").map((f) => f.id);
-    for (let i = 0; i * tamanhoLote < s.length; i++)
+    const focais = doTema.filter((f) => f.modo === "focal" || f.modo === "hibrido").map((f) => f.id);
+    for (let i = 0; i * tamanhoLote < focais.length; i++)
       blocos.push({
-        id: `s-${dois(ordemTema)}-${i + 1}`,
-        tipo: "S",
+        id: `focal-${dois(ordemTema)}-${i + 1}`,
+        tipo: "focal",
         tema: tema.titulo,
         ordemTema,
-        fichas: s.slice(i * tamanhoLote, (i + 1) * tamanhoLote),
+        fichas: focais.slice(i * tamanhoLote, (i + 1) * tamanhoLote),
       });
-    const j = doTema.filter((f) => f.modo === "J").map((f) => f.id);
-    if (j.length) blocos.push({ id: `j-${dois(ordemTema)}`, tipo: "J", tema: tema.titulo, ordemTema, fichas: j });
+    const tematicas = doTema.filter((f) => f.modo === "tematico").map((f) => f.id);
+    if (tematicas.length)
+      blocos.push({
+        id: `tematico-${dois(ordemTema)}`,
+        tipo: "tematico",
+        tema: tema.titulo,
+        ordemTema,
+        fichas: tematicas,
+      });
   });
   const transversais = doModo.filter(ehTransversal).map((f) => f.id);
   if (transversais.length)
     blocos.push({
-      id: "t",
-      tipo: "T",
+      id: "transversal",
+      tipo: "transversal",
       tema: TEMAS.at(-1)!.titulo,
       ordemTema: TEMAS.length - 1,
       fichas: transversais,
@@ -125,10 +146,14 @@ export function planejarBlocos(fichas: readonly FichaIa[], modo: ModoRevisaoIa, 
   return blocos;
 }
 
-/** As fichas S e J que o modo deixa de fora (para o aviso do título). */
-export function fichasForaDoModo(fichas: readonly FichaIa[], modo: ModoRevisaoIa): FichaIa[] {
-  const dentro = new Set(fichasDoModo(fichas, modo).map((f) => f.id));
-  return fichas.filter((f) => f.modo !== "D" && !dentro.has(f.id));
+/** As fichas de IA que o modo deixa de fora (para o aviso do título). */
+export function fichasForaDoModo(
+  fichas: readonly FichaIa[],
+  modo: ModoRevisaoIa,
+  escaladas?: ReadonlySet<string>,
+): FichaIa[] {
+  const dentro = new Set(fichasDoModo(fichas, modo, escaladas).map((f) => f.id));
+  return fichas.filter((f) => f.modo !== "hibrido" && !dentro.has(f.id));
 }
 
 /* ============================================================ recortes */

@@ -2,15 +2,14 @@
   "id": "CT-CURR-05",
   "titulo": "Ementas completas e auditáveis",
   "dominio": "curriculo",
-  "criticidade": "BLOQ",
+  "criticidade": "bloqueante",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: cada componente da matriz tem ementa (pareamento de nomes); suficiência por amostra."
   },
   "topicos_tematicos": [
     "ementario_bibliografias"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Ementas completas e auditáveis",
     "Ementário, bibliografias e conteúdos",
@@ -39,9 +38,9 @@
   "escalonar_quando": "Escalonar se apenas parte do ementário estiver rastreável ou se a completude for duvidosa.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

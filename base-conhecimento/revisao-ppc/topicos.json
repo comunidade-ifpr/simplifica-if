@@ -6,8 +6,15 @@
       "id": "identificacao_oferta",
       "titulo": "Identificação e características da oferta",
       "grupo": "Identidade do curso",
-      "tipo_escopo": "tematico",
       "descricao": "Localiza fichas sobre denominação, eixo tecnológico, forma de oferta, carga horária, duração, modalidade, turno, vagas e requisitos de acesso.",
+      "secoes": [
+        "pretextual",
+        "identificacao",
+        "formato_oferta",
+        "carga_horaria",
+        "prazo_integralizacao",
+        "requisitos_acesso"
+      ],
       "aliases_titulo": [
         "identificação do curso",
         "características do curso",
@@ -29,29 +36,18 @@
         "semipresencial",
         "a distância",
         "prazo de integralização"
-      ],
-      "fichas": [
-        "CT-IDENT-01",
-        "CT-IDENT-02",
-        "CT-IDENT-09",
-        "CT-IDENT-13",
-        "CT-IDENT-16",
-        "CT-IDENT-17",
-        "CT-CURR-02",
-        "CT-CURR-16",
-        "CT-CURR-23",
-        "CT-TRANS-07",
-        "CT-CURR-27",
-        "CT-TRANS-11",
-        "CT-TRANS-12"
       ]
     },
     {
       "id": "justificativa_objetivos",
       "titulo": "Justificativa, objetivos e demanda social",
       "grupo": "Identidade do curso",
-      "tipo_escopo": "tematico",
       "descricao": "Agrupa fichas que avaliam justificativa institucional, demanda regional, objetivos geral/específicos e coerência entre finalidade do curso e percurso formativo.",
+      "secoes": [
+        "justificativa",
+        "objetivos",
+        "contexto_institucional"
+      ],
       "aliases_titulo": [
         "justificativa",
         "objetivos",
@@ -66,19 +62,18 @@
         "objetivo geral",
         "objetivos específicos",
         "finalidade do curso"
-      ],
-      "fichas": [
-        "CT-IDENT-03",
-        "CT-IDENT-04",
-        "CT-TRANS-01"
       ]
     },
     {
       "id": "concepcao_metodologias",
       "titulo": "Concepção pedagógica e metodologias",
       "grupo": "Projeto pedagógico",
-      "tipo_escopo": "tematico",
       "descricao": "Reúne fichas sobre concepção de Educação Profissional e Tecnológica, integração entre teoria e prática, metodologias, práticas profissionais e coerência pedagógica.",
+      "secoes": [
+        "concepcao_pedagogica",
+        "organizacao_curricular",
+        "ensino_pesquisa_extensao"
+      ],
       "aliases_titulo": [
         "concepção do curso",
         "concepção pedagógica",
@@ -93,21 +88,18 @@
         "metodologias",
         "prática profissional",
         "projeto integrador"
-      ],
-      "fichas": [
-        "CT-IDENT-05",
-        "CT-IDENT-06",
-        "CT-CURR-08",
-        "CT-TRANS-02",
-        "CT-TRANS-08"
       ]
     },
     {
       "id": "perfil_egresso_mundo_trabalho",
       "titulo": "Perfil do egresso, competências e mundo do trabalho",
       "grupo": "Identidade do curso",
-      "tipo_escopo": "multitematico",
       "descricao": "Conecta perfil profissional, competências, campos de atuação, Catálogo Nacional de Cursos Técnicos, verticalização e aderência ao mundo do trabalho.",
+      "secoes": [
+        "perfil_egresso",
+        "mundo_trabalho",
+        "itinerario_formativo"
+      ],
       "aliases_titulo": [
         "perfil do egresso",
         "perfil profissional",
@@ -123,27 +115,19 @@
         "CNCT",
         "verticalização",
         "mundo do trabalho"
-      ],
-      "fichas": [
-        "CT-IDENT-10",
-        "CT-IDENT-11",
-        "CT-IDENT-12",
-        "CT-IDENT-14",
-        "CT-IDENT-15",
-        "CT-IDENT-18",
-        "CT-IDENT-19",
-        "CT-CURR-25",
-        "CT-SUP-21",
-        "CT-TRANS-01",
-        "CT-TRANS-08"
       ]
     },
     {
       "id": "matriz_curricular",
       "titulo": "Matriz curricular, integralização e componentes",
       "grupo": "Organização curricular",
-      "tipo_escopo": "tematico",
       "descricao": "Abrange estrutura curricular, carga horária, distribuição por período, componentes obrigatórios, atividades, integralização e coerência da matriz.",
+      "secoes": [
+        "matriz_curricular",
+        "organizacao_curricular",
+        "carga_horaria",
+        "itinerario_formativo"
+      ],
       "aliases_titulo": [
         "organização curricular",
         "matriz curricular",
@@ -160,31 +144,16 @@
         "semestre",
         "ano",
         "atividade curricular"
-      ],
-      "fichas": [
-        "CT-CURR-01",
-        "CT-CURR-02",
-        "CT-CURR-03",
-        "CT-CURR-10",
-        "CT-CURR-12",
-        "CT-CURR-16",
-        "CT-CURR-18",
-        "CT-CURR-19",
-        "CT-CURR-23",
-        "CT-TRANS-03",
-        "CT-TRANS-04",
-        "CT-CURR-27",
-        "CT-TRANS-09",
-        "CT-TRANS-11",
-        "CT-TRANS-12"
       ]
     },
     {
       "id": "ementario_bibliografias",
       "titulo": "Ementário, bibliografias e conteúdos",
       "grupo": "Organização curricular",
-      "tipo_escopo": "tematico",
       "descricao": "Localiza fichas que analisam ementas, objetivos de componentes, conteúdos, bibliografia básica/complementar e atualização do acervo.",
+      "secoes": [
+        "ementas"
+      ],
       "aliases_titulo": [
         "ementário",
         "ementas",
@@ -199,20 +168,16 @@
         "bibliografia complementar",
         "acervo",
         "livros"
-      ],
-      "fichas": [
-        "CT-CURR-05",
-        "CT-CURR-06",
-        "CT-SUP-13",
-        "CT-TRANS-03"
       ]
     },
     {
       "id": "estagio",
       "titulo": "Estágio curricular",
       "grupo": "Organização curricular",
-      "tipo_escopo": "condicional",
       "descricao": "Agrupa fichas que avaliam decisão de obrigatoriedade, carga horária, convênios, campos pretendidos, orientação, supervisão e coerência normativa do estágio.",
+      "secoes": [
+        "estagio_praticas"
+      ],
       "aliases_titulo": [
         "estágio",
         "estágio curricular",
@@ -229,21 +194,19 @@
         "concedente",
         "agente de integração",
         "convênio"
-      ],
-      "fichas": [
-        "CT-CURR-20",
-        "CT-CURR-21",
-        "CT-CURR-24",
-        "CT-CURR-25",
-        "CT-TRANS-11"
       ]
     },
     {
       "id": "aproveitamento_certificacao_tfc",
       "titulo": "Aproveitamento, certificação intermediária e trabalho final",
       "grupo": "Organização curricular",
-      "tipo_escopo": "condicional",
       "descricao": "Reúne fichas sobre aproveitamento de estudos, certificação intermediária, terminalidade, trabalho final ou instrumentos equivalentes quando previstos.",
+      "secoes": [
+        "aproveitamento_estudos",
+        "certificados_diplomas",
+        "itinerario_formativo",
+        "trabalho_conclusao"
+      ],
       "aliases_titulo": [
         "aproveitamento de estudos",
         "certificação intermediária",
@@ -259,20 +222,16 @@
         "TFC",
         "certificado intermediário",
         "competências já desenvolvidas"
-      ],
-      "fichas": [
-        "CT-CURR-13",
-        "CT-CURR-14",
-        "CT-CURR-15",
-        "CT-CURR-17"
       ]
     },
     {
       "id": "avaliacao_aprendizagem",
       "titulo": "Avaliação do processo de ensino-aprendizagem",
       "grupo": "Projeto pedagógico",
-      "tipo_escopo": "tematico",
       "descricao": "Organiza fichas voltadas a critérios, instrumentos, recuperação, avaliação contínua, coerência metodológica e tratamento de necessidades educacionais específicas.",
+      "secoes": [
+        "avaliacao"
+      ],
       "aliases_titulo": [
         "avaliação",
         "avaliação da aprendizagem",
@@ -292,21 +251,16 @@
         "regime de dependência",
         "conselho de classe",
         "necessidades educacionais específicas"
-      ],
-      "fichas": [
-        "CT-SUP-01",
-        "CT-SUP-02",
-        "CT-SUP-26",
-        "CT-TRANS-02",
-        "CT-TRANS-09"
       ]
     },
     {
       "id": "assistencia_estudantil_permanencia",
       "titulo": "Assistência estudantil, permanência e êxito",
       "grupo": "Suporte ao estudante",
-      "tipo_escopo": "tematico",
       "descricao": "Reúne fichas sobre políticas de permanência, assistência estudantil, acompanhamento discente, ingresso e suporte ao itinerário do estudante.",
+      "secoes": [
+        "atendimento_estudante"
+      ],
       "aliases_titulo": [
         "assistência estudantil",
         "permanência e êxito",
@@ -321,19 +275,17 @@
         "acompanhamento",
         "monitoria",
         "apoio pedagógico"
-      ],
-      "fichas": [
-        "CT-SUP-03",
-        "CT-SUP-24",
-        "CT-IDENT-17"
       ]
     },
     {
       "id": "aee_acessibilidade_inclusao",
       "titulo": "AEE, acessibilidade e inclusão",
       "grupo": "Suporte ao estudante",
-      "tipo_escopo": "multitematico",
       "descricao": "Agrupa fichas sobre atendimento educacional especializado, AICE, adaptação, flexibilização, acessibilidade física/pedagógica/comunicacional e inclusão.",
+      "secoes": [
+        "acessibilidade_inclusao",
+        "atendimento_estudante"
+      ],
       "aliases_titulo": [
         "atendimento educacional especializado",
         "AEE",
@@ -350,27 +302,18 @@
         "inclusão",
         "NAPNE",
         "tecnologia assistiva"
-      ],
-      "fichas": [
-        "CT-CURR-09",
-        "CT-CURR-22",
-        "CT-SUP-04",
-        "CT-SUP-10",
-        "CT-SUP-11",
-        "CT-SUP-18",
-        "CT-SUP-19",
-        "CT-SUP-20",
-        "CT-SUP-25",
-        "CT-TRANS-09",
-        "CT-TRANS-10"
       ]
     },
     {
       "id": "corpo_docente_gestao",
       "titulo": "Corpo docente, equipe técnica e gestão do curso",
       "grupo": "Condições de oferta",
-      "tipo_escopo": "tematico",
       "descricao": "Organiza fichas sobre docentes, titulação, habilitação, coordenação, colegiado/NDE equivalente, equipe pedagógica e capacidade de gestão da oferta.",
+      "secoes": [
+        "pretextual",
+        "corpo_docente",
+        "gestao_curso"
+      ],
       "aliases_titulo": [
         "corpo docente",
         "equipe técnica",
@@ -387,23 +330,16 @@
         "colegiado",
         "equipe pedagógica",
         "técnicos administrativos"
-      ],
-      "fichas": [
-        "CT-SUP-06",
-        "CT-SUP-15",
-        "CT-SUP-16",
-        "CT-SUP-17",
-        "CT-SUP-23",
-        "CT-TRANS-04",
-        "CT-TRANS-10"
       ]
     },
     {
       "id": "infraestrutura",
       "titulo": "Infraestrutura, laboratórios e acervo",
       "grupo": "Condições de oferta",
-      "tipo_escopo": "tematico",
       "descricao": "Reúne fichas sobre espaços físicos, laboratórios, equipamentos, biblioteca, acervo, acessibilidade espacial e suficiência da infraestrutura.",
+      "secoes": [
+        "infraestrutura"
+      ],
       "aliases_titulo": [
         "infraestrutura",
         "laboratórios",
@@ -419,23 +355,17 @@
         "sala de aula",
         "infraestrutura",
         "acessibilidade física"
-      ],
-      "fichas": [
-        "CT-SUP-07",
-        "CT-SUP-11",
-        "CT-SUP-22",
-        "CT-SUP-25",
-        "CT-TRANS-04",
-        "CT-TRANS-07",
-        "CT-TRANS-10"
       ]
     },
     {
       "id": "avaliacao_ppc_egressos",
       "titulo": "Avaliação do PPC e acompanhamento de egressos",
       "grupo": "Avaliação institucional",
-      "tipo_escopo": "tematico",
       "descricao": "Agrupa fichas que verificam avaliação periódica do projeto pedagógico, acompanhamento de egressos, revisão curricular e retroalimentação institucional.",
+      "secoes": [
+        "avaliacao_curso",
+        "acompanhamento_egresso"
+      ],
       "aliases_titulo": [
         "avaliação do PPC",
         "avaliação do curso",
@@ -450,18 +380,17 @@
         "CPA",
         "acompanhamento",
         "indicadores"
-      ],
-      "fichas": [
-        "CT-SUP-08",
-        "CT-IDENT-18"
       ]
     },
     {
       "id": "referencias_normativas",
       "titulo": "Referências, base legal e normas institucionais",
       "grupo": "Fundamentação normativa",
-      "tipo_escopo": "multitematico",
       "descricao": "Concentra fichas que conferem fundamentação legal, vigência normativa, referências bibliográficas/normativas e coerência com atos institucionais.",
+      "secoes": [
+        "legislacao",
+        "referencias"
+      ],
       "aliases_titulo": [
         "base legal",
         "fundamentação legal",
@@ -481,24 +410,17 @@
         "DCNEM",
         "CNCT",
         "IFPR"
-      ],
-      "fichas": [
-        "CT-IDENT-08",
-        "CT-IDENT-19",
-        "CT-SUP-09",
-        "CT-SUP-12",
-        "CT-SUP-13",
-        "CT-SUP-14",
-        "CT-SUP-21",
-        "CT-SUP-24"
       ]
     },
     {
       "id": "temas_transversais_cidadania",
       "titulo": "Temas transversais, cidadania e direitos humanos",
       "grupo": "Projeto pedagógico",
-      "tipo_escopo": "transversal",
       "descricao": "Reúne fichas sobre educação política, direitos da cidadania, direitos humanos, educação ambiental, relações étnico-raciais, cultura afro-brasileira/indígena, diversidade e formação cidadã.",
+      "secoes": [
+        "organizacao_curricular",
+        "concepcao_pedagogica"
+      ],
       "aliases_titulo": [
         "temas transversais",
         "direitos humanos",
@@ -521,19 +443,14 @@
         "realidade social e política",
         "democracia",
         "participação política"
-      ],
-      "fichas": [
-        "CT-CURR-11",
-        "CT-CURR-26",
-        "CT-SUP-10"
       ]
     },
     {
       "id": "sintese_transversal_revisao",
       "titulo": "Síntese transversal e riscos para a revisão",
       "grupo": "Síntese da revisão",
-      "tipo_escopo": "transversal",
       "descricao": "Agrupa fichas que cruzam múltiplos temas para apoiar a síntese do relatório, achados recorrentes e recomendação final.",
+      "secoes": [],
       "aliases_titulo": [
         "síntese transversal",
         "conclusão da revisão",
@@ -548,18 +465,6 @@
         "achados",
         "síntese",
         "pendências"
-      ],
-      "fichas": [
-        "CT-TRANS-01",
-        "CT-TRANS-02",
-        "CT-TRANS-03",
-        "CT-TRANS-04",
-        "CT-TRANS-07",
-        "CT-TRANS-08",
-        "CT-TRANS-09",
-        "CT-TRANS-10",
-        "CT-TRANS-11",
-        "CT-TRANS-12"
       ]
     }
   ]

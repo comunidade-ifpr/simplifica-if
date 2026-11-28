@@ -94,7 +94,7 @@ function criarLista(
 function criarBloco(id: string, estado: BlocoRevisaoIa["estado"]): BlocoRevisaoIa {
   return {
     id,
-    tipo: "S",
+    tipo: "focal",
     tema: `Tema ${id}`,
     ordemTema: id === "b1" ? 1 : 2,
     fichas: 2,

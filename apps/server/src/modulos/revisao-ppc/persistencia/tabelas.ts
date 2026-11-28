@@ -198,3 +198,158 @@ export const criar = Effect.gen(function* () {
     )
   `;
 });
+
+const ESTADOS_ANTIGOS: Readonly<Record<string, string>> = {
+  ATENDE: "atende",
+  NAO_ATENDE: "nao_atende",
+  INCONCLUSIVO: "a_conferir",
+  NAO_APLICAVEL: "nao_se_aplica",
+};
+const TIPOS_BLOCO_ANTIGOS: Readonly<Record<string, string>> = {
+  S: "focal",
+  J: "tematico",
+  T: "transversal",
+};
+const CRITICIDADES_ANTIGAS: Readonly<Record<string, string>> = {
+  BLOQ: "bloqueante",
+  OBRIG: "obrigatorio",
+  REC: "recomendado",
+};
+
+const migrarIdBloco = (id: string): string => {
+  if (id === "t") return "transversal";
+  if (id.startsWith("s-")) return `focal-${id.slice(2)}`;
+  if (id.startsWith("j-")) return `tematico-${id.slice(2)}`;
+  return id;
+};
+
+const migrarResultadosJson = (texto: string): string | null => {
+  let dados: unknown;
+  try {
+    dados = JSON.parse(texto);
+  } catch {
+    return null;
+  }
+  if (typeof dados !== "object" || dados === null || !Array.isArray((dados as { resultados?: unknown }).resultados))
+    return null;
+  let mudou = false;
+  const resultados = (dados as { resultados: unknown[] }).resultados.map((item) => {
+    if (typeof item !== "object" || item === null) return item;
+    const est = (item as { estado?: unknown }).estado;
+    if (typeof est === "string" && Object.hasOwn(ESTADOS_ANTIGOS, est)) {
+      mudou = true;
+      return { ...item, estado: ESTADOS_ANTIGOS[est] };
+    }
+    return item;
+  });
+  return mudou ? JSON.stringify({ ...dados, resultados }) : null;
+};
+
+const migrarPlanoJson = (texto: string): string | null => {
+  let dados: unknown;
+  try {
+    dados = JSON.parse(texto);
+  } catch {
+    return null;
+  }
+  if (typeof dados !== "object" || dados === null) return null;
+  const obj = dados as Record<string, unknown>;
+  let mudou = false;
+  const blocos = Array.isArray(obj["blocos"])
+    ? obj["blocos"].map((b) => {
+        if (typeof b !== "object" || b === null) return b;
+        const bloco = b as Record<string, unknown>;
+        const idAntigo = typeof bloco["id"] === "string" ? bloco["id"] : "";
+        const idNovo = migrarIdBloco(idAntigo);
+        const tipoAntigo = typeof bloco["tipo"] === "string" ? bloco["tipo"] : "";
+        const tipoNovo = TIPOS_BLOCO_ANTIGOS[tipoAntigo] ?? tipoAntigo;
+        if (idNovo !== idAntigo || tipoNovo !== tipoAntigo) {
+          mudou = true;
+          return { ...bloco, id: idNovo, tipo: tipoNovo };
+        }
+        return bloco;
+      })
+    : obj["blocos"];
+  const fichas = Array.isArray(obj["fichas"])
+    ? obj["fichas"].map((f) => {
+        if (typeof f !== "object" || f === null) return f;
+        const ficha = { ...(f as Record<string, unknown>) };
+        let fMudou = false;
+        if (ficha["modo"] === "D") {
+          ficha["modo"] = "hibrido";
+          fMudou = true;
+        } else if (ficha["modo"] === "S") {
+          ficha["modo"] = "focal";
+          fMudou = true;
+        } else if (ficha["modo"] === "J") {
+          ficha["modo"] = ficha["tipo_escopo"] === "transversal" ? "transversal" : "tematico";
+          fMudou = true;
+        }
+        if ("tipo_escopo" in ficha) {
+          delete ficha["tipo_escopo"];
+          fMudou = true;
+        }
+        if (typeof ficha["criticidade"] === "string" && Object.hasOwn(CRITICIDADES_ANTIGAS, ficha["criticidade"])) {
+          ficha["criticidade"] = CRITICIDADES_ANTIGAS[ficha["criticidade"]];
+          fMudou = true;
+        }
+        if (Array.isArray(ficha["estados_permitidos"])) {
+          const novos = ficha["estados_permitidos"].map((e) =>
+            typeof e === "string" && Object.hasOwn(ESTADOS_ANTIGOS, e) ? ESTADOS_ANTIGOS[e] : e,
+          );
+          if (novos.some((e, i) => e !== (ficha["estados_permitidos"] as unknown[])[i])) {
+            ficha["estados_permitidos"] = novos;
+            fMudou = true;
+          }
+        }
+        if (fMudou) mudou = true;
+        return fMudou ? ficha : f;
+      })
+    : obj["fichas"];
+  return mudou ? JSON.stringify({ ...obj, blocos, fichas }) : null;
+};
+
+/** Migração 6: converte blocos (`S`/`J`/`T`) e estados (`ATENDE`/…) já gravados para o vocabulário unificado. */
+export const migrarVocabularioRevisaoPpc = Effect.gen(function* () {
+  const sql = yield* SqlClient.SqlClient;
+  const revisoes = yield* sql<{ id: string; plano: string }>`SELECT id, plano FROM revisao_ppc_revisoes_ia`;
+  for (const r of revisoes) {
+    const novo = migrarPlanoJson(r.plano);
+    if (novo !== null) yield* sql`UPDATE revisao_ppc_revisoes_ia SET plano = ${novo} WHERE id = ${r.id}`;
+  }
+  const blocos = yield* sql<{ revisao_id: string; bloco_id: string; resultado: string }>`
+    SELECT revisao_id, bloco_id, resultado FROM revisao_ppc_blocos_ia
+  `;
+  for (const b of blocos) {
+    const novoId = migrarIdBloco(b.bloco_id);
+    const novoRes = migrarResultadosJson(b.resultado);
+    if (novoId !== b.bloco_id || novoRes !== null) {
+      yield* sql`
+        UPDATE revisao_ppc_blocos_ia
+        SET bloco_id = ${novoId}, resultado = ${novoRes ?? b.resultado}
+        WHERE revisao_id = ${b.revisao_id} AND bloco_id = ${b.bloco_id}
+      `;
+    }
+  }
+  const tentativas = yield* sql<{ revisao_id: string; bloco_id: string; numero: number }>`
+    SELECT revisao_id, bloco_id, numero FROM revisao_ppc_tentativas_ia
+  `;
+  for (const t of tentativas) {
+    const novoId = migrarIdBloco(t.bloco_id);
+    if (novoId !== t.bloco_id) {
+      yield* sql`
+        UPDATE revisao_ppc_tentativas_ia
+        SET bloco_id = ${novoId}
+        WHERE revisao_id = ${t.revisao_id} AND bloco_id = ${t.bloco_id} AND numero = ${t.numero}
+      `;
+    }
+  }
+  const listas = yield* sql<{ id: string; resultados_ia: string | null }>`
+    SELECT id, resultados_ia FROM revisao_ppc_listas_pendencias WHERE resultados_ia IS NOT NULL
+  `;
+  for (const l of listas) {
+    if (l.resultados_ia === null) continue;
+    const novo = migrarResultadosJson(l.resultados_ia);
+    if (novo !== null) yield* sql`UPDATE revisao_ppc_listas_pendencias SET resultados_ia = ${novo} WHERE id = ${l.id}`;
+  }
+});

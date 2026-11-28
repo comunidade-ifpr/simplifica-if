@@ -2,15 +2,14 @@
   "id": "CT-IDENT-03",
   "titulo": "Justificativa baseada em demanda territorial e formativa",
   "dominio": "identidade",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: justificativa territorial."
   },
   "topicos_tematicos": [
     "justificativa_objetivos"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Justificativa baseada em demanda territorial e formativa",
     "Justificativa, objetivos e demanda social",
@@ -50,9 +49,9 @@
   "escalonar_quando": "Escalonar se a justificativa existir, mas sem lastro territorial claro ou com dados frágeis.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

@@ -2,16 +2,15 @@
   "id": "CT-CURR-02",
   "titulo": "Carga horária total declarada e não inferior ao mínimo",
   "dominio": "curriculo",
-  "criticidade": "BLOQ",
+  "criticidade": "bloqueante",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Carga horária total extraída do PPC contra o mínimo do CNCT e o da forma integrada (3.000 h, Res. CNE/CP nº 2/2026, art. 29); como a extração não tem revisão humana, o valor abaixo do mínimo sai a conferir. Totais diferentes entre seções são da CT-TRANS-12."
   },
   "topicos_tematicos": [
     "identificacao_oferta",
     "matriz_curricular"
   ],
-  "tipo_escopo": "multitematico",
   "ancoras_semanticas": [
     "Carga horária total apresentada com consistência",
     "Identificação e características da oferta",
@@ -90,9 +89,9 @@
   "escalonar_quando": "Escalonar se houver indício de inconsistência entre hora-aula e hora-relógio, dúvida sobre a conversão para hora-relógio ou condição específica da descrição CNCT não tratada. Escalonar também se não ficar claro se a carga horária de estágio foi computada dentro do mínimo exigido. Escalonar se as 3.000 horas do integrado ou do concomitante intercomplementar só forem alcançadas com a carga horária do estágio, pois a Resolução não decide expressamente esse caso.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

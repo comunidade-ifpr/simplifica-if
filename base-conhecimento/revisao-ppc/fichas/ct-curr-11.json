@@ -2,15 +2,14 @@
   "id": "CT-CURR-11",
   "titulo": "Temas transversais e formação cidadã no currículo",
   "dominio": "curriculo",
-  "criticidade": "REC",
+  "criticidade": "recomendado",
   "execucao": {
-    "modo": "S",
+    "modo": "focal",
     "justificativa": "Código localiza e extrai, IA confirma: termos dos temas transversais legais nas ementas."
   },
   "topicos_tematicos": [
     "temas_transversais_cidadania"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Temas transversais e formação cidadã no currículo",
     "Temas transversais, cidadania e direitos humanos",
@@ -78,9 +77,9 @@
   "escalonar_quando": "Escalonar se o tratamento existir, mas estiver concentrado em afirmações genéricas, sem permitir verificar onde os temas aparecem na matriz, ementas, projetos ou práticas formativas.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

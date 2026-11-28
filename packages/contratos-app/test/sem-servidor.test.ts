@@ -23,7 +23,7 @@ const PONTE = NodeURL.pathToFileURL(NodePath.resolve(import.meta.dirname, "../sr
  * (o schema `UrlOficial` da `ficha_norma`, que só importa o Effect). O último teste confere que elas não importam
  * nada além de `effect/*`, para a exceção não crescer.
  */
-const EXCECOES_KB = ["canal.ts", "normas/fonte.ts"].map((arquivo) =>
+const EXCECOES_KB = ["canal.ts", "normas/fonte.ts", "revisao-ppc/constantes.ts"].map((arquivo) =>
   NodePath.resolve(import.meta.dirname, "../../kb/src", arquivo),
 );
 const PERMITIDOS: ReadonlyArray<string> = EXCECOES_KB.map((caminho) => NodeURL.pathToFileURL(caminho).href);

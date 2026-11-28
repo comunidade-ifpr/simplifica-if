@@ -69,8 +69,8 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.criterio", (it) => {
       const aee = yield* rpc["revisaoPpc.criterio"]({ lista: resultado.lista, id: "CT-CURR-22" });
       const viva = lista.pendencias.find((v) => v.pendencia.ficha === "CT-CURR-22")!;
       assert.strictEqual(aee.titulo, "AEE não incorporado como componente curricular da matriz ou do histórico");
-      assert.strictEqual(aee.criticidade, "BLOQ");
-      assert.strictEqual(aee.modo, "D");
+      assert.strictEqual(aee.criticidade, "bloqueante");
+      assert.strictEqual(aee.modo, "hibrido");
       assert.isNotNull(aee.pergunta);
       assert.isNotNull(aee.atendido);
       assert.isNotNull(aee.naoAtendido);
@@ -110,7 +110,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.criterio", (it) => {
 
       // A ficha S com dispositivos: um por norma, na ordem da ficha, com a vigência do banco.
       const s = yield* rpc["revisaoPpc.criterio"]({ lista: resultado.lista, id: "CT-IDENT-02" });
-      assert.strictEqual(s.modo, "S");
+      assert.strictEqual(s.modo, "focal");
       assert.isAbove(s.normas.length, 0);
       assert.strictEqual(new Set(s.normas.map((n) => n.norma)).size, s.normas.length);
       assert.isTrue(s.normas.every((n) => n.dispositivos.every((d) => !d.startsWith("#"))));

@@ -2,16 +2,15 @@
   "id": "CT-CURR-16",
   "titulo": "Pré-requisitos de ingresso compatíveis com o CNCT",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "D",
+    "modo": "hibrido",
     "justificativa": "Requisito de escolaridade de ingresso no texto do PPC contra o que o CNCT exige para a forma de oferta declarada; texto não encontrado sai a conferir."
   },
   "topicos_tematicos": [
     "identificacao_oferta",
     "matriz_curricular"
   ],
-  "tipo_escopo": "multitematico",
   "ancoras_semanticas": [
     "Pré-requisitos de ingresso compatíveis com o CNCT",
     "Identificação e características da oferta",
@@ -89,9 +88,9 @@
   "escalonar_quando": "Escalonar se o PPC mencionar ingresso de modo genérico, se houver dúvida entre forma de oferta e requisito escolar correspondente, ou se a elegibilidade do candidato depender de inferência indireta.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

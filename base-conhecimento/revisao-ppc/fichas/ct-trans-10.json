@@ -2,9 +2,9 @@
   "id": "CT-TRANS-10",
   "titulo": "Condições de inclusão: profissional de educação especial e acessibilidade da infraestrutura",
   "dominio": "transversal",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "transversal",
     "justificativa": "Julgamento transversal: compara o AEE e a acessibilidade prometidos na seção de atendimento com a equipe (corpo docente e técnico) e com a infraestrutura descritas no PPC."
   },
   "topicos_tematicos": [
@@ -13,7 +13,6 @@
     "infraestrutura",
     "sintese_transversal_revisao"
   ],
-  "tipo_escopo": "transversal",
   "ancoras_semanticas": [
     "Condições de inclusão: profissional de educação especial e acessibilidade da infraestrutura",
     "atendimento educacional especializado",
@@ -38,15 +37,15 @@
   ],
   "referencias_normativas": [],
   "pergunta": "Quando o PPC prevê AEE ou recursos de acessibilidade, ele indica quem os oferece (profissional de educação especial habilitado, no curso ou no campus) e uma infraestrutura que corresponda à acessibilidade descrita?",
-  "rubrica": "Comparar a seção de atendimento ao estudante com as seções de corpo docente e equipe técnica e de infraestrutura. Verificar: (1) se, quando o PPC prevê AEE, há docente ou profissional de educação especial habilitado indicado na equipe do curso ou do campus, ou remissão clara ao setor do campus que o provê (como o NAPNE, com o profissional), e não apenas a promessa do serviço; (2) se a acessibilidade descrita na seção de atendimento (sala de recursos multifuncionais, tecnologias assistivas, intérprete de Libras, acessibilidade arquitetônica) encontra correspondência na seção de infraestrutura, sem contradição (por exemplo, sala de recursos prometida e ausente da lista de ambientes, ou acessibilidade física afirmada e ambientes de uso do curso sem acesso). Não reavaliar aqui a suficiência isolada de cada seção (CT-SUP-11, CT-SUP-15, CT-SUP-19, CT-SUP-20, CT-SUP-25); avaliar a correspondência entre elas. Usar NAO_APLICAVEL apenas quando o PPC não prever AEE nem recursos de acessibilidade.",
+  "rubrica": "Comparar a seção de atendimento ao estudante com as seções de corpo docente e equipe técnica e de infraestrutura. Verificar: (1) se, quando o PPC prevê AEE, há docente ou profissional de educação especial habilitado indicado na equipe do curso ou do campus, ou remissão clara ao setor do campus que o provê (como o NAPNE, com o profissional), e não apenas a promessa do serviço; (2) se a acessibilidade descrita na seção de atendimento (sala de recursos multifuncionais, tecnologias assistivas, intérprete de Libras, acessibilidade arquitetônica) encontra correspondência na seção de infraestrutura, sem contradição (por exemplo, sala de recursos prometida e ausente da lista de ambientes, ou acessibilidade física afirmada e ambientes de uso do curso sem acesso). Não reavaliar aqui a suficiência isolada de cada seção (CT-SUP-11, CT-SUP-15, CT-SUP-19, CT-SUP-20, CT-SUP-25); avaliar a correspondência entre elas. Usar nao_se_aplica apenas quando o PPC não prever AEE nem recursos de acessibilidade.",
   "boa_evidencia": "Profissional de educação especial ou setor responsável identificado na equipe do curso ou do campus, e recursos de acessibilidade descritos no atendimento que aparecem na infraestrutura.",
   "ma_evidencia": "AEE prometido sem nenhum profissional habilitado nem setor responsável identificado; recursos de acessibilidade afirmados no atendimento e ausentes ou contraditos na infraestrutura.",
   "escalonar_quando": "Escalonar se o PPC remeter à estrutura do campus sem descrevê-la e a correspondência não puder ser conferida no próprio documento.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

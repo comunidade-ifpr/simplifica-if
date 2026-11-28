@@ -70,7 +70,7 @@ const formatarFicha = (f: FichaIa) =>
     `Rubrica: ${f.rubrica}`,
     f.boa_evidencia ? `Boa evidência: ${f.boa_evidencia}` : "",
     f.ma_evidencia ? `Má evidência: ${f.ma_evidencia}` : "",
-    f.escalonar_quando ? `Quando escalonar (INCONCLUSIVO): ${f.escalonar_quando}` : "",
+    f.escalonar_quando ? `Quando escalonar (a_conferir): ${f.escalonar_quando}` : "",
     `Estados permitidos: ${f.estados_permitidos.join(", ")}`,
   ]
     .filter(Boolean)
@@ -123,7 +123,7 @@ const exemploResposta = (bloco: Bloco, criterio: CriterioInconclusivo) =>
     resultados: [
       {
         ficha_id: "CT-EXEMPLO-01",
-        estado: "NAO_ATENDE",
+        estado: "nao_atende",
         confianca: 0.8,
         ...(criterio === "ausencia" ? { tipo_achado: "ausencia_em_secao_presente" } : {}),
         titulo: "A seção de acesso não trata da reserva de vagas",
@@ -135,7 +135,9 @@ const exemploResposta = (bloco: Bloco, criterio: CriterioInconclusivo) =>
         fontes: [],
       },
     ],
-    ...(bloco.tipo === "J" ? { resumo: "O PPC descreve o ingresso por processo seletivo anual de 40 vagas." } : {}),
+    ...(bloco.tipo === "tematico"
+      ? { resumo: "O PPC descreve o ingresso por processo seletivo anual de 40 vagas." }
+      : {}),
   });
 
 const REGRA_TRECHO = [
@@ -147,15 +149,15 @@ const REGRA_TRECHO = [
 const DECISAO: Record<CriterioInconclusivo, string> = {
   conservador: [
     "Para o que falta no PPC, cite o trecho da seção lida onde devia estar e descreva a falta em `lacunas`.",
-    "Na dúvida, use INCONCLUSIVO: é melhor pedir conferência do que afirmar um erro.",
+    "Na dúvida, use a_conferir: é melhor pedir conferência do que afirmar um erro.",
   ].join("\n"),
   ausencia: [
     "Como decidir:",
-    "- ATENDE: o conteúdo entregue mostra o que o critério pede.",
-    '- NAO_ATENDE com `tipo_achado` "ausencia_em_secao_presente": a seção onde o item devia estar está no conteúdo entregue e não o traz. Cite em `evidencias` um trecho literal dessa seção (a prova de que você a leu) e diga em `lacunas` o que falta. O trecho tem de ser do recorte deste critério (ou das seções do tema), não do quadro de identificação nem da matriz que vêm antes. A ausência numa seção lida é o achado: não a rebaixe para INCONCLUSIVO por cautela.',
-    '- NAO_ATENDE com `tipo_achado` "contradicao": o PPC afirma algo que contraria o critério, uma norma do contexto ou outro ponto do próprio PPC; cite o trecho.',
-    '- NAO_ATENDE com `tipo_achado` "merito": o problema é de qualidade ou suficiência, claramente aquém da rubrica; cite o trecho.',
-    "- INCONCLUSIVO: só quando a decisão é juízo de mérito que pede leitura humana (adequação, suficiência ou coerência sem regra objetiva na rubrica), ou quando o conteúdo entregue não traz a seção onde o item estaria; nesse caso, diga em `lacunas` qual seção faltou.",
+    "- atende: o conteúdo entregue mostra o que o critério pede.",
+    '- nao_atende com `tipo_achado` "ausencia_em_secao_presente": a seção onde o item devia estar está no conteúdo entregue e não o traz. Cite em `evidencias` um trecho literal dessa seção (a prova de que você a leu) e diga em `lacunas` o que falta. O trecho tem de ser do recorte deste critério (ou das seções do tema), não do quadro de identificação nem da matriz que vêm antes. A ausência numa seção lida é o achado: não a rebaixe para a_conferir por cautela.',
+    '- nao_atende com `tipo_achado` "contradicao": o PPC afirma algo que contraria o critério, uma norma do contexto ou outro ponto do próprio PPC; cite o trecho.',
+    '- nao_atende com `tipo_achado` "merito": o problema é de qualidade ou suficiência, claramente aquém da rubrica; cite o trecho.',
+    "- a_conferir: só quando a decisão é juízo de mérito que pede leitura humana (adequação, suficiência ou coerência sem regra objetiva na rubrica), ou quando o conteúdo entregue não traz a seção onde o item estaria; nesse caso, diga em `lacunas` qual seção faltou.",
   ].join("\n"),
 };
 
@@ -168,21 +170,21 @@ const CONTRATO = (bloco: Bloco, fichas: readonly FichaIa[], criterio: CriterioIn
     "Campos de cada resultado (limites contados em caracteres; passar do limite recusa a resposta):",
     `- "ficha_id": o ID do critério; "estado": um dos estados permitidos da ficha; "confianca": número de 0 a 1;`,
     criterio === "ausencia"
-      ? '- "tipo_achado": obrigatório quando o estado é NAO_ATENDE: "ausencia_em_secao_presente", "contradicao" ou "merito" (omita nos outros estados);'
+      ? '- "tipo_achado": obrigatório quando o estado é nao_atende: "ausencia_em_secao_presente", "contradicao" ou "merito" (omita nos outros estados);'
       : null,
-    '- "titulo": até 120, o problema numa frase curta, que se entende sozinha numa lista (o que está errado ou falta, e onde), sem ponto final, sem siglas de sistema nem códigos de ficha; quando o estado é ATENDE ou NAO_APLICAVEL, o que o PPC traz;',
+    '- "titulo": até 120, o problema numa frase curta, que se entende sozinha numa lista (o que está errado ou falta, e onde), sem ponto final, sem siglas de sistema nem códigos de ficha; quando o estado é atende ou nao_se_aplica, o que o PPC traz;',
     '- "justificativa": até 600, uma ou duas frases para a coordenação do curso, sem siglas de sistema nem códigos de ficha;',
     '- "evidencias": até 5 itens { "trecho": "..." }, cada trecho literal de 25 a 200 (veja a regra abaixo);',
     '- "lacunas": até 5 frases de até 200, o que falta; "o_que_fazer": até 300, o ajuste no PPC em uma frase (vazio se atende);',
     '- "fontes": até 10 IDs exatos de fonte do contexto acima, como br/cne-cp/res/2026/2#art29-par2, a norma sem # ou cnct; sem fonte adequada, lista vazia.',
-    bloco.tipo === "J"
+    bloco.tipo === "tematico"
       ? 'No objeto, além de "bloco" e "resultados": "resumo", até 600, o que o PPC diz neste tema, para a coerência do conjunto.'
       : null,
     "",
     "Exemplo mínimo de resposta válida (critério e trecho fictícios, só a forma):",
     exemploResposta(bloco, criterio),
     "",
-    "ATENDE e NAO_ATENDE exigem ao menos uma evidência conferível.",
+    "atende e nao_atende exigem ao menos uma evidência conferível.",
     REGRA_TRECHO,
     "",
     DECISAO[criterio],
@@ -260,7 +262,7 @@ export function alvosDoTema(fichas: readonly Pick<FichaIa, "id">[], secoes: stri
   return alvos;
 }
 
-/** O pedido de um bloco S: as fichas, cada uma com o recorte que o código achou. */
+/** O pedido de um bloco focal: as fichas, cada uma com o recorte que o código achou (e eventual nota da pré-conferência). */
 export function pedidoS(
   bloco: Bloco,
   fichas: readonly FichaIa[],
@@ -269,14 +271,19 @@ export function pedidoS(
   nonce: string,
   comum = "",
   criterio: CriterioInconclusivo = CRITERIO_PADRAO,
+  notasPreConferencia?: ReadonlyMap<string, string>,
 ): string {
   const ppc = trechosPorRecorte(fichas, recortes, comum);
+  const formatar = (f: FichaIa) => {
+    const nota = notasPreConferencia?.get(f.id);
+    return nota ? `${formatarFicha(f)}\nNota da pré-conferência em código: ${nota}` : formatarFicha(f);
+  };
   return [
     `# Bloco ${bloco.id}: ${bloco.tema} (confirmação de critérios sobre recortes)`,
     "",
     "## Critérios",
     "",
-    ...fichas.map(formatarFicha),
+    ...fichas.map(formatar),
     "",
     "## Contexto normativo (confiável)",
     "",
@@ -349,8 +356,8 @@ export function pedidoT(
     `# Bloco ${bloco.id}: coerência do conjunto (critérios transversais)`,
     "",
     "Você não recebe o PPC inteiro: avalie pelos resumos dos temas, pelos resultados já conferidos, pelas partes extraídas pelo código e pelos recortes de cada critério.",
-    "Os resumos foram escritos por IA a partir do PPC: orientam, mas não são evidência. Toda evidência é cópia literal das partes extraídas ou dos recortes; se a conclusão só se apoia nos resumos, responda INCONCLUSIVO.",
-    "O que não puder ser decidido assim é INCONCLUSIVO.",
+    "Os resumos foram escritos por IA a partir do PPC: orientam, mas não são evidência. Toda evidência é cópia literal das partes extraídas ou dos recortes; se a conclusão só se apoia nos resumos, responda a_conferir.",
+    "O que não puder ser decidido assim é a_conferir.",
     "",
     "## Critérios",
     "",

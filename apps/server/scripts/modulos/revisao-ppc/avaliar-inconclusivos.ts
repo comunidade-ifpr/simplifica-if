@@ -65,7 +65,7 @@ const EXCLUIDOS = new Set(["curitiba/tecnico-em-enfermagem"]);
 export type Par = {
   ppc: string;
   ficha: string;
-  modo: "S" | "J";
+  modo: "focal" | "tematico";
   /** O PPC tem a evidência do gabarito (medidor offline). */
   noPpc: boolean;
   /** O conteúdo entregue à ficha tem a evidência. */
@@ -78,7 +78,7 @@ export type LinhaExecucao = {
   curso: string | null;
   criterio: CriterioInconclusivo;
   bloco: string;
-  tipo: "S" | "J";
+  tipo: "focal" | "tematico";
   fichas: string[];
   pedido: string;
   fontes: string[];
@@ -129,7 +129,7 @@ const selecionar = Effect.gen(function* () {
     const nomes = nomesDoPpc(doPpc);
     const pares: Par[] = [];
     for (const bloco of plano.blocos) {
-      if (bloco.tipo === "T") continue;
+      if (bloco.tipo === "transversal") continue;
       for (const ficha of bloco.fichas) {
         if (!GABARITO[ficha]) continue;
         const r = avaliarRecorte(ficha, bloco.alvos[ficha]?.alvo ?? "", doPpc, nomes);
@@ -144,7 +144,7 @@ const selecionar = Effect.gen(function* () {
   // na revisão real); cada ficha no máximo `maxPorFicha` vezes, para variar os critérios (menos no
   // estrato raro, que entra inteiro).
   const estrato = (p: Par) => `${p.modo}-${p.noPpc ? "com" : "sem"}`;
-  const ESTRATOS = ["S-com", "S-sem", "J-com", "J-sem"];
+  const ESTRATOS = ["focal-com", "focal-sem", "tematico-com", "tematico-sem"];
   const todos = [...candidatos.values()].flat();
   const disponiveis = Object.fromEntries(ESTRATOS.map((e) => [e, todos.filter((p) => estrato(p) === e).length]));
   const igual = Math.ceil(totalPares / 4);
@@ -224,7 +224,7 @@ const rodar = Effect.gen(function* () {
         soFichas: doPpc.map((p) => p.ficha),
       });
       const porId = new Map(plano.fichas.map((f) => [f.id, f]));
-      const blocos = plano.blocos.filter((b) => b.tipo !== "T" && !feitas.has(`${id}|${criterio}|${b.id}`));
+      const blocos = plano.blocos.filter((b) => b.tipo !== "transversal" && !feitas.has(`${id}|${criterio}|${b.id}`));
       yield* Effect.forEach(
         blocos,
         (bloco) =>
@@ -250,7 +250,7 @@ const rodar = Effect.gen(function* () {
               curso,
               criterio,
               bloco: bloco.id,
-              tipo: bloco.tipo as "S" | "J",
+              tipo: bloco.tipo as "focal" | "tematico",
               fichas: bloco.fichas,
               pedido: bloco.pedido,
               fontes: bloco.fontes,

@@ -40,7 +40,7 @@ const bloco = (
   extra: Partial<BlocoRevisaoIa> = {},
 ): BlocoRevisaoIa => ({
   id,
-  tipo: "S",
+  tipo: "focal",
   tema,
   ordemTema,
   fichas: 2,
@@ -150,7 +150,7 @@ describe("o andamento", () => {
             iniciadoEm: "2026-11-22T10:00:00Z",
             ultimaAtividadeEm: "2026-11-22T10:01:25Z",
           }),
-          bloco("t", 9, "Transversais", "pendente", { tipo: "T" }),
+          bloco("transversal", 9, "Transversais", "pendente", { tipo: "transversal" }),
         ],
       },
       agora,

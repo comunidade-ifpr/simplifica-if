@@ -182,7 +182,7 @@ const bloco = (
   extra: Partial<BlocoRevisaoIa> = {},
 ): BlocoRevisaoIa => ({
   id,
-  tipo: "S",
+  tipo: "focal",
   tema,
   ordemTema,
   fichas: 1,

@@ -2,15 +2,14 @@
   "id": "CT-CURR-08",
   "titulo": "Metodologias e integração curricular compatíveis com a proposta",
   "dominio": "curriculo",
-  "criticidade": "OBRIG",
+  "criticidade": "obrigatorio",
   "execucao": {
-    "modo": "J",
+    "modo": "tematico",
     "justificativa": "Julgamento da IA: metodologias."
   },
   "topicos_tematicos": [
     "concepcao_metodologias"
   ],
-  "tipo_escopo": "tematico",
   "ancoras_semanticas": [
     "Metodologias e integração curricular compatíveis com a proposta",
     "Concepção pedagógica e metodologias",
@@ -54,9 +53,9 @@
   "escalonar_quando": "Escalonar se houver intenção metodológica, mas sem materialização suficiente na organização curricular.",
   "evidencia_minima": 2,
   "estados_permitidos": [
-    "ATENDE",
-    "NAO_ATENDE",
-    "INCONCLUSIVO",
-    "NAO_APLICAVEL"
+    "atende",
+    "nao_atende",
+    "a_conferir",
+    "nao_se_aplica"
   ]
 }

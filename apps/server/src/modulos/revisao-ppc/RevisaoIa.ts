@@ -50,6 +50,7 @@ import * as Stream from "effect/Stream";
 import { type Atividade, type AvisoNaoAceito, type Provider } from "@simplifica-if/contratos-app";
 import {
   type BlocoRevisaoIa,
+  DESCRICAO_MOTIVO_ESCALONAMENTO,
   type EstadoRevisaoIa,
   type EtapaBlocoIa,
   FalhaRevisaoPpc,
@@ -413,6 +414,12 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const lista = yield* persistencia.buscarLista(entrada.lista);
     if (lista === null) return yield* falha("", "Esta lista de pendências não existe mais. Revise o PPC de novo.");
     const nonce = yield* novoNonce(aleatorio);
+    const escaladas = new Map<string, string>();
+    for (const c of lista.resultado.criterios) {
+      if (c.estado === "a_conferir" && c.escalarParaIa && c.escalarParaIa.length > 0) {
+        escaladas.set(c.ficha, c.escalarParaIa.map((m) => DESCRICAO_MOTIVO_ESCALONAMENTO[m]).join(" "));
+      }
+    }
     const plano = yield* preparar({
       markdown: lista.markdown,
       linhasTextoParaIa: lista.linhasTextoParaIa,
@@ -420,6 +427,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       curso: cursoEmTexto(lista.resultado.curso),
       modo: entrada.modo,
       nonce,
+      ...(escaladas.size ? { escaladas } : {}),
     }).pipe(
       Effect.provideContext(contextoKb),
       Effect.tapError((erro) => Effect.logError("revisão com IA: preparo falhou", erro)),
@@ -516,10 +524,21 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         ia: pendencia.origem === "ia" ? (iaDaFicha.get(pendencia.ficha) ?? registro.provider) : null,
       });
     }
-    // Se uma ficha foi relida depois de "Encerrar leitura por aqui", pendências antigas dela da IA que
-    // não existem mais no resultado recalculado saem de `revisao_ppc_pendencias_vivas` para acompanhar a régua.
+    // Se uma ficha foi relida depois de "Encerrar leitura por aqui" ou era híbrida escalada e foi
+    // decidida pela IA, as pendências antigas que não existem mais no resultado recalculado saem de
+    // `revisao_ppc_pendencias_vivas` para acompanhar a régua.
+    const fichasDecididasIa = new Set(
+      ia.resultados
+        .filter((r) => r.estado === "atende" || r.estado === "nao_se_aplica" || r.estado === "nao_atende")
+        .map((r) => r.ficha),
+    );
     const obsoletas = atuais
-      .filter((p) => p.pendencia.origem === "ia" && !chavesResultado.has(p.chave))
+      .filter(
+        (p) =>
+          !chavesResultado.has(p.chave) &&
+          (p.pendencia.origem === "ia" ||
+            (!doCodigoConferido && p.pendencia.origem === "codigo" && fichasDecididasIa.has(p.pendencia.ficha))),
+      )
       .map((p) => p.chave);
     yield* persistencia.mesclarIa(
       lista.id,
@@ -634,14 +653,14 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const seNaoPausou = (efeito: Effect.Effect<void, FalhaRevisaoPpc | PausaRevisao>) =>
       Effect.suspend(() => (pausa === null ? efeito : Effect.void));
 
-    const comuns = plano.blocos.filter((b) => b.tipo !== "T" && !prontos.has(b.id));
+    const comuns = plano.blocos.filter((b) => b.tipo !== "transversal" && !prontos.has(b.id));
     yield* Effect.forEach(comuns, (b) => seNaoPausou(rodarBloco(b, b.pedido)), {
       concurrency: paralelismo,
       discard: true,
     });
     if (pausa !== null) return yield* Effect.fail<PausaRevisao>(pausa);
 
-    const transversal = plano.blocos.find((b) => b.tipo === "T");
+    const transversal = plano.blocos.find((b) => b.tipo === "transversal");
     if (transversal && !prontos.has(transversal.id) && plano.transversais) {
       const resumosTemas = plano.blocos.flatMap((b) => {
         const r = prontos.get(b.id)?.resumo;

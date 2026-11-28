@@ -3,6 +3,20 @@
  * lista viva das pendências. Exportado à parte, como `@simplifica-if/contratos-app/modulos/revisao-ppc`:
  * a raiz do pacote só junta o `GrupoRevisaoPpc` ao `GrupoApp` (`contratos.ts`, arquivo de composição).
  */
+import {
+  CRITICIDADES,
+  DESCRICAO_CRITICIDADE,
+  DESCRICAO_MODO_EXECUCAO,
+  DESCRICAO_MOTIVO_ESCALONAMENTO,
+  ehCriticidadeCriterio,
+  esquemaModoExecucao,
+  esquemaMotivoEscalonamento,
+  MODOS_EXECUCAO,
+  MOTIVOS_ESCALONAMENTO,
+  type CriticidadeCriterio,
+  type ModoExecucao,
+  type MotivoEscalonamento,
+} from "@simplifica-if/kb/revisao-ppc/constantes";
 import { Ancora } from "@simplifica-if/mcp/grupo-leitura";
 import { FalhaProvider } from "@simplifica-if/motor/erros";
 import { NivelEsforco } from "@simplifica-if/motor/estados-provider";
@@ -11,6 +25,19 @@ import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
 import { FalhaPasta } from "../pasta.ts";
 import { AvisoNaoAceito } from "../preferencias.ts";
+
+export {
+  CRITICIDADES,
+  DESCRICAO_CRITICIDADE,
+  DESCRICAO_MODO_EXECUCAO,
+  DESCRICAO_MOTIVO_ESCALONAMENTO,
+  ehCriticidadeCriterio,
+  MODOS_EXECUCAO,
+  MOTIVOS_ESCALONAMENTO,
+  type CriticidadeCriterio,
+  type ModoExecucao,
+  type MotivoEscalonamento,
+};
 
 /** Uma fonte da pendência, legível para quem não conhece o `ifpr://`: nome e dispositivo, e o endereço oficial. */
 export const FonteRevisao = Schema.Struct({
@@ -80,6 +107,8 @@ export const CriterioRevisao = Schema.Struct({
   mensagem: Schema.String,
   /** Quem decidiu (no `nao_lido`, quem decide: a IA). */
   origem: Schema.Literals(["codigo", "ia"]),
+  /** Motivos fixos (sem texto do PPC) quando o verificador em código pediu escalonamento para a IA. */
+  escalarParaIa: Schema.optionalKey(Schema.Array(esquemaMotivoEscalonamento)),
 });
 export type CriterioRevisao = typeof CriterioRevisao.Type;
 
@@ -194,10 +223,10 @@ export type UsoRevisaoIa = typeof UsoRevisaoIa.Type;
 export const EtapaBlocoIa = Schema.Literals(["aguardando", "recebendo", "conferindo", "nova_tentativa"]);
 export type EtapaBlocoIa = typeof EtapaBlocoIa.Type;
 
-/** Um bloco da revisão: um lote S, um tema J ou as transversais, numa sessão curta do provider. */
+/** Um bloco da revisão: um lote `focal`, um tema `tematico` ou os critérios `transversal`, numa sessão curta do provider. */
 export const BlocoRevisaoIa = Schema.Struct({
   id: Schema.String,
-  tipo: Schema.Literals(["S", "J", "T"]),
+  tipo: Schema.Literals(["focal", "tematico", "transversal"]),
   tema: Schema.String,
   ordemTema: Schema.Number,
   fichas: Schema.Number,
@@ -406,8 +435,8 @@ export const FichaCriterio = Schema.Struct({
   atendido: Schema.NullOr(Schema.String),
   naoAtendido: Schema.NullOr(Schema.String),
   aConferir: Schema.NullOr(Schema.String),
-  /** Como o app confere: `D`, sozinho; `S`, acha o trecho e a IA confirma; `J`, a IA julga as seções. */
-  modo: Schema.Literals(["D", "S", "J"]),
+  /** Como o app confere: `hibrido`, `focal`, `tematico` ou `transversal`. */
+  modo: esquemaModoExecucao,
   /** O porquê do modo, como a ficha o escreve. */
   justificativa: Schema.NullOr(Schema.String),
   /** Os temas das seções do PPC em que o critério procura (os tópicos da ficha), pelo título. */
