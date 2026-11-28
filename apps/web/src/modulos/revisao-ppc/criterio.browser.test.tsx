@@ -51,7 +51,7 @@ it("a ficha do critério: pela pendência, pela régua e pelo Detalhes; Ir à pe
     .toBeVisible();
   await expect.element(ficha.getByText("Critério da tarefa “Revisar um PPC”")).toBeVisible();
   await expect.element(ficha.getByText(/Bloqueia a submissão/)).toBeVisible();
-  await expect.element(ficha.getByText(/o app confere sozinho, sem IA\./)).toBeVisible();
+  await expect.element(ficha.getByText(/Híbrido — O app confere primeiro em código/)).toBeVisible();
   const neste = ficha.getByRole("region", { name: "Neste PPC" });
   await expect.element(neste.getByText("Para corrigir")).toBeVisible();
   await expect.element(neste.getByText(/^O AEE aparece como componente/)).toBeVisible();

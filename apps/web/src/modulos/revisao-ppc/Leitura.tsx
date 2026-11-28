@@ -1,9 +1,10 @@
 /**
  * O resultado da revisão: o que corrigir primeiro e quanto do PPC já foi lido. De cima para baixo, o
- * cabeçalho do documento, a frase-resultado com a régua de critérios, a faixa da IA (enquanto ela não
- * leu tudo), o acompanhamento no Word (com a revisão acompanhando um arquivo), o bloqueio do curso (quando o CNCT não reconheceu o curso) e a lista em duas colunas: os temas à
- * esquerda e as pendências à direita, uma aberta por vez. As ressalvas ficam juntas em "Sobre esta
- * revisão", no pé da coluna de temas, e abaixo dela, "Conversas desta revisão" (`ConversasDaRevisao.tsx`).
+ * cabeçalho do documento (com "Corrigir no Word", "Ver PPC" e "Conversas desta revisão"), a frase-resultado
+ * com a régua de critérios, a faixa da IA (enquanto ela não leu tudo), o acompanhamento no Word (com a
+ * revisão acompanhando um arquivo), o bloqueio do curso (quando o CNCT não reconheceu o curso) e a lista em
+ * duas colunas: os temas à esquerda e as pendências à direita, uma aberta por vez. As ressalvas ficam juntas
+ * em "Sobre esta revisão", no pé da coluna de temas.
  *
  * O estado da revisão e da leitura com IA fica em `ControleRevisao` (`useRevisao`); aqui ficam só
  * controles locais efêmeros (diálogo de apagar e campo de caminho no modo navegador). Os links (a norma de
@@ -198,6 +199,7 @@ export function Leitura({
         <CabecalhoDocumento
           nome={nomeDoArquivo(lista.arquivoOriginal)}
           curso={descreverCurso(r.curso)}
+          conversas={<ConversasDaRevisao />}
           acoes={{
             aoAbrirAoLado: () => abrirLink(linkDoPpc(lista.id, versaoPpc), "painel"),
             aoAbrirNoWord: () => void revisao.abrirNoWord(),
@@ -321,9 +323,6 @@ export function Leitura({
               feitas={textoFeitas(c)}
               sobre={sobre}
             />
-            <div className="mt-6">
-              <ConversasDaRevisao />
-            </div>
           </div>
         </aside>
         <div className="flex min-w-0 flex-col gap-3">
@@ -361,7 +360,6 @@ export function Leitura({
           )}
           <div className="flex flex-col gap-3 pt-4 @min-[960px]/tela:hidden">
             <p className="font-semibold text-small tabular-nums">{textoFeitas(c)}</p>
-            <ConversasDaRevisao />
             {sobre}
           </div>
         </div>

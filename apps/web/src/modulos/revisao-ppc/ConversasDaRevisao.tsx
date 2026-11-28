@@ -2,18 +2,21 @@
  * "Conversas desta revisão" (`docs/plans/multitarefa.md`, "Conversa ao lado", decisão 12): as conversas ao
  * lado da revisão aberta, na ordem em que se abriram, cada uma pelo título (e pela pendência de que nasceu,
  * quando ela ainda está na lista), que abre no painel, na aba Conversar; e "Nova conversa sobre esta
- * revisão", o rascunho de uma conversa geral nova com a ficha do PPC. Na tela inteira, fica na coluna dos
- * temas (abaixo de 960 px, no pé da lista); na coluna ao lado do Word, recolhida acima da caixa curta, onde
- * a conversa aberta cobre a coluna (o painel) e a nova fica na caixa curta.
+ * revisão", o rascunho de uma conversa geral nova com a ficha do PPC. Na tela inteira, fica no cabeçalho do
+ * documento, ao lado de "Ver PPC": sem conversas ainda, é um botão direto ("Conversar") que abre uma nova;
+ * com uma ou mais, abre um popover com a lista e "+ Nova conversa sobre esta revisão". Na coluna ao lado do
+ * Word (`compacta`), fica recolhida acima da caixa curta, onde a conversa aberta cobre a coluna (o painel) e
+ * a nova fica na caixa curta.
  *
  * A conversa sem título ainda (a primeira mensagem dá o título, e a tela relê a lista depois do envio) aparece
  * pela pendência, ou como "Conversa sobre a revisão". A apagada nesta execução (também em outra janela, quando
  * esta janela fica sabendo) sai daqui na hora; a lista do servidor já não a traz depois. `aoEscolher`: a
  * pessoa escolheu uma conversa (ou a nova), que a coluna compacta não troca pela da pendência aberta.
  */
-import { MessageSquareIcon, PlusIcon } from "lucide-react";
-import { useId, useSyncExternalStore } from "react";
+import { ChevronDownIcon, MessageSquareIcon, PlusIcon } from "lucide-react";
+import { useState, useSyncExternalStore } from "react";
 import { Button } from "../../components/ui/button.tsx";
+import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "../../components/ui/popover.tsx";
 import { useApp } from "../../contexto.tsx";
 import { useRevisao } from "./contexto.ts";
 import { conversasVivas, pedidoDaConversa, pedidoDeConversaNova } from "./conversa.ts";
@@ -27,7 +30,7 @@ export function ConversasDaRevisao({
 }) {
   const [estado] = useRevisao();
   const app = useApp();
-  const idTitulo = useId();
+  const [aberto, setAberto] = useState(false);
   // Redesenha quando uma conversa passa a apagada (`conversasVivas` a tira).
   useSyncExternalStore(app.conversas.observarApagadas, app.conversas.quantasApagadas);
   const lista = estado.lista;
@@ -38,12 +41,14 @@ export function ConversasDaRevisao({
     const pedido = pedidoDaConversa(app, conversa);
     if (pedido === undefined) return;
     app.painel.conversar(pedido);
+    setAberto(false);
     aoEscolher?.();
   };
   const nova = () => {
     const pedido = pedidoDeConversaNova(app);
     if (pedido === undefined) return;
     app.painel.conversar(pedido, { mostrar: !compacta });
+    setAberto(false);
     aoEscolher?.();
   };
 
@@ -69,11 +74,6 @@ export function ConversasDaRevisao({
       </li>
     );
   });
-  const botaoNova = (
-    <Button size="sm" variant="ghost" className="self-start" onClick={nova}>
-      <PlusIcon /> Nova conversa sobre esta revisão
-    </Button>
-  );
 
   if (compacta)
     return (
@@ -83,24 +83,45 @@ export function ConversasDaRevisao({
         </summary>
         <div className="flex flex-col gap-1 pt-1">
           {itens.length === 0 ? null : <ul className="flex max-h-40 flex-col overflow-y-auto">{itens}</ul>}
-          {botaoNova}
+          <Button size="sm" variant="ghost" className="self-start" onClick={nova}>
+            <PlusIcon /> Nova conversa sobre esta revisão
+          </Button>
         </div>
       </details>
     );
 
+  if (conversas.length === 0)
+    return (
+      <Button variant="outline" onClick={nova} title="Conversar com a IA sobre esta revisão">
+        <MessageSquareIcon /> Conversar
+      </Button>
+    );
+
   return (
-    <section aria-labelledby={idTitulo} className="flex flex-col gap-1">
-      <h2 id={idTitulo} className="px-2 font-semibold text-small">
-        Conversas desta revisão
-      </h2>
-      {itens.length === 0 ? (
-        <p className="px-2 text-muted-foreground text-small">
-          Nenhuma ainda. “Conversar sobre esta pendência” abre uma para cada pendência.
-        </p>
-      ) : (
-        <ul className="flex flex-col">{itens}</ul>
-      )}
-      {botaoNova}
-    </section>
+    <Popover open={aberto} onOpenChange={setAberto}>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            title="Conversas desta revisão"
+            aria-label={`Conversas desta revisão (${conversas.length})`}
+          />
+        }
+      >
+        <MessageSquareIcon />
+        <span>Conversas</span>
+        <span className="text-muted-foreground tabular-nums">{conversas.length}</span>
+        <ChevronDownIcon aria-hidden className="size-3.5 text-muted-foreground" />
+      </PopoverTrigger>
+      <PopoverContent align="end" className="flex flex-col gap-2 p-2">
+        <PopoverTitle className="px-2 pt-1 font-semibold text-small">Conversas desta revisão</PopoverTitle>
+        <ul className="flex max-h-72 flex-col gap-0.5 overflow-y-auto">{itens}</ul>
+        <div className="border-border border-t pt-1.5">
+          <Button size="sm" variant="ghost" className="w-full justify-start" onClick={nova}>
+            <PlusIcon /> Nova conversa sobre esta revisão
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

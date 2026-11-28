@@ -46,7 +46,10 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await expect.element(chip).toBeVisible();
   await chip.click();
   const painel = page.getByRole("complementary", { name: "Painel ao lado" });
-  await expect.element(painel.getByText("Res. CNE/CP 2/2026, art. 28, XVIII", { exact: true })).toBeVisible();
+  const abaNorma = painel
+    .getByRole("navigation", { name: "Documentos abertos" })
+    .getByRole("button", { name: "Res. CNE/CP 2/2026" });
+  await expect.element(abaNorma).toHaveAttribute("title", "Res. CNE/CP 2/2026, art. 28, XVIII");
   const norma = painel.getByRole("article", { name: "Norma" });
   await expect.element(norma.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
   await expect

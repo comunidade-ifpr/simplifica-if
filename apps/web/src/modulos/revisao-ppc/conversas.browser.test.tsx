@@ -31,7 +31,7 @@ it("a aba com o painel vazio traz o PPC; duas pendências, duas conversas em dua
   await using app = await montarApp(servidor, "/revisao-ppc");
   const { api, painel: controle, revisao } = app.contexto;
   await page.getByRole("button", { name: "Escolher o PPC" }).click();
-  await expect.element(page.getByRole("region", { name: "Conversas desta revisão" })).toBeVisible();
+  await expect.element(page.getByRole("button", { name: "Conversar" })).toBeVisible();
 
   // O painel vazio, aberto no Ler: a aba Conversar (pelas setas, como pelo clique) traz o PPC (uma conversa
   // geral, sem pendência), e o foco fica na aba.
@@ -90,8 +90,9 @@ it("a aba com o painel vazio traz o PPC; duas pendências, duas conversas em dua
   await expect.element(mensagens.getByText("Sobre a primeira?")).toBeVisible();
   expect(controle.obter().conversa.id).toBe(primeira);
 
-  // "Conversas desta revisão" lista as duas, e cada uma abre no painel.
-  const daRevisao = page.getByRole("main").getByRole("region", { name: "Conversas desta revisão" });
+  // "Conversas desta revisão" no cabeçalho lista as duas no popover, e cada uma abre no painel.
+  await page.getByRole("button", { name: "Conversas desta revisão (2)" }).click();
+  const daRevisao = page.getByRole("dialog", { name: "Conversas desta revisão" });
   // As duas conversas, pelo título que a primeira mensagem deu (a tela relê a lista depois do envio), e
   // "Nova conversa sobre esta revisão".
   await vi.waitFor(() => expect(daRevisao.getByRole("button").elements()).toHaveLength(3));

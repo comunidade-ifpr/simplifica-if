@@ -86,7 +86,7 @@ inserirExplorar(banco);
     "../../../base-conhecimento/revisao-ppc/fichas/ct-curr-22.json",
   );
   const texto = NodeFS.readFileSync(arquivo, "utf8");
-  const ficha = JSON.parse(texto) as { id: string; titulo: string };
+  const ficha = JSON.parse(texto) as { id: string; titulo: string; topicos_tematicos?: string[] };
   const db = new NodeSqlite.DatabaseSync(banco);
   db.prepare("INSERT INTO revisao_ppc_fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
     ficha.id,
@@ -95,6 +95,8 @@ inserirExplorar(banco);
     JSON.stringify(ficha),
     texto,
   );
+  const inserirTopico = db.prepare("INSERT INTO revisao_ppc_fichas_topicos (ficha_id, topico_id) VALUES (?, ?)");
+  for (const topico of ficha.topicos_tematicos ?? []) inserirTopico.run(ficha.id, topico);
   db.close();
 }
 /** Um PPC sintético (fictício) na pasta, para a revisão prévia. */

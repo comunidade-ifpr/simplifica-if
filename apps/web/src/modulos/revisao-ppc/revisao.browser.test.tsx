@@ -291,7 +291,20 @@ it("sem tema lido, a faixa pausada não oferece encerrar", async () => {
   expect(page.getByRole("button", { name: "Encerrar conferência por aqui" }).query()).toBeNull();
 });
 
-it("'Conversas desta revisão': cada conversa pelo título (e pela pendência), que abre no painel; e a nova", async () => {
+it("'Conversas desta revisão': sem conversas, botão direto 'Conversar' abre uma nova no painel", async () => {
+  const listaVazia: ListaPendencias = { ...listaMinima, pendencias: [viva], conversas: [] };
+  const revisao = new ControleRevisao({} as Api, {
+    inicial: { ...estadoInicialRevisao(), fase: "resultado", listaId: listaVazia.id, lista: listaVazia },
+  });
+  const painel = new ControlePainel();
+  montar(<ConversasDaRevisao />, revisao, semServidor, painel, new GerenteConversas(semServidor));
+  await page.getByRole("button", { name: "Conversar" }).click();
+  expect(painel.obter()).toMatchObject({ aberto: true, aba: "conversar" });
+  expect(painel.obter().conversa.id).toBeUndefined();
+  expect(painel.obter().conversa.fichas.map((f) => f.chave)).toEqual([FICHA_PPC]);
+});
+
+it("'Conversas desta revisão': com conversas, popover com cada uma pelo título (e pela pendência) e a nova", async () => {
   const lista: ListaPendencias = {
     ...listaMinima,
     pendencias: [viva],
@@ -306,23 +319,30 @@ it("'Conversas desta revisão': cada conversa pelo título (e pela pendência), 
   const painel = new ControlePainel();
   const conversas = new GerenteConversas(semServidor);
   montar(<ConversasDaRevisao />, revisao, semServidor, painel, conversas);
-  const secao = page.getByRole("region", { name: "Conversas desta revisão" });
-  await expect.element(secao.getByRole("button", { name: /^Norma revogada/ })).toBeVisible();
-  await expect.element(secao.getByText(`Pendência: ${TITULO}`)).toBeInTheDocument();
-  await expect.element(secao.getByRole("button", { name: "Conversa sobre a revisão" })).toBeVisible();
+  const gatilho = page.getByRole("button", { name: "Conversas desta revisão (2)" });
+  await gatilho.click();
+  const popover = page.getByRole("dialog", { name: "Conversas desta revisão" });
+  await expect.element(popover.getByRole("button", { name: /^Norma revogada/ })).toBeVisible();
+  await expect.element(popover.getByText(`Pendência: ${TITULO}`)).toBeInTheDocument();
+  await expect.element(popover.getByRole("button", { name: "Conversa sobre a revisão" })).toBeVisible();
 
-  await secao.getByRole("button", { name: /^Norma revogada/ }).click();
+  await popover.getByRole("button", { name: /^Norma revogada/ }).click();
   expect(painel.obter()).toMatchObject({ aberto: true, aba: "conversar" });
   expect(painel.obter().conversa).toMatchObject({ id: "c1", origem: { chave: `revisao-ppc:lista-1#${viva.chave}` } });
-  await secao.getByRole("button", { name: "Conversa sobre a revisão" }).click();
+  await expect.element(popover).not.toBeInTheDocument();
+
+  await gatilho.click();
+  await popover.getByRole("button", { name: "Conversa sobre a revisão" }).click();
   expect(painel.obter().conversa).toMatchObject({ id: "c2", origem: { chave: "revisao-ppc:lista-1~c2" } });
 
-  await secao.getByRole("button", { name: "Nova conversa sobre esta revisão" }).click();
+  await gatilho.click();
+  await popover.getByRole("button", { name: "Nova conversa sobre esta revisão" }).click();
   expect(painel.obter().conversa.id).toBeUndefined();
   expect(painel.obter().conversa.fichas.map((f) => f.chave)).toEqual([FICHA_PPC]);
 
   // A conversa apagada (aqui ou em outra janela, quando esta fica sabendo) sai da lista na hora.
   conversas.apagada("c1");
-  await expect.element(secao.getByRole("button", { name: /^Norma revogada/ })).not.toBeInTheDocument();
-  await expect.element(secao.getByRole("button", { name: "Conversa sobre a revisão" })).toBeVisible();
+  await page.getByRole("button", { name: "Conversas desta revisão (1)" }).click();
+  await expect.element(popover.getByRole("button", { name: /^Norma revogada/ })).not.toBeInTheDocument();
+  await expect.element(popover.getByRole("button", { name: "Conversa sobre a revisão" })).toBeVisible();
 });

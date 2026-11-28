@@ -112,9 +112,12 @@ it("da revisão: a ficha tirada não vai à pasta; a conversa da pendência volt
   await expect.element(painel.getByText("Esta é uma conversa livre, sem o que está na tela.")).toBeVisible();
   await expect.element(painel.getByRole("button", { name: "Conversar sobre esta pendência" })).toBeVisible();
   await expect.element(fichas.getByText("PPC de teste", { exact: true })).not.toBeInTheDocument();
-  // A lista "Conversas desta revisão" tem a conversa (pela pendência, antes de a tela reler o título).
-  const daRevisao = page.getByRole("main").getByRole("region", { name: "Conversas desta revisão" });
+  // O popover "Conversas desta revisão" no cabeçalho tem a conversa (pela pendência, antes de a tela reler o título).
+  await page.getByRole("button", { name: "Conversas desta revisão (1)" }).click();
+  const daRevisao = page.getByRole("dialog", { name: "Conversas desta revisão" });
   await expect.element(daRevisao.getByRole("button", { name: /O AEE aparece como componente/ })).toBeVisible();
+  await userEvent.keyboard("{Escape}");
+  await expect.element(daRevisao).not.toBeInTheDocument();
   // "Conversar sobre esta pendência" retoma a conversa da pendência, com as fichas de novo.
   await conversarSobre.click();
   await expect.element(mensagens.getByText("O que falta no AEE?")).toBeVisible();
