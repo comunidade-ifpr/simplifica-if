@@ -134,10 +134,9 @@ it("a revisão volta sem o compacto=1; apagada, sai da rota e do painel com “E
     await expect.poll(() => app.roteador.state.location.search.id).toBeTypeOf("string");
     lista = String(app.roteador.state.location.search.id);
     // O PPC no painel (a trilha guarda o link `ifpr://revisao-ppc/<lista>/…`), e a coluna ao lado do Word.
-    await page.getByRole("button", { name: "Mais ações do documento" }).click();
-    await page.getByRole("menuitem", { name: "Abrir o PPC ao lado" }).click();
+    await page.getByRole("button", { name: "Ver PPC" }).click();
     await expect.element(page.getByRole("article", { name: "PPC em revisão" })).toBeVisible();
-    await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+    await page.getByRole("button", { name: "Corrigir no Word" }).click();
     await vi.waitFor(() => expect(app.roteador.state.location.search).toMatchObject({ compacto: 1 }));
   }
 
@@ -179,8 +178,7 @@ it("'Qual é o curso?' com a conversa ao lado e o PPC no Ler: o painel segue a l
     await revisaoNoResultado(app.contexto.revisao);
     await expect.poll(() => app.roteador.state.location.search.id).toBeTypeOf("string");
     const antiga = String(app.roteador.state.location.search.id);
-    await page.getByRole("button", { name: "Mais ações do documento" }).click();
-    await page.getByRole("menuitem", { name: "Abrir o PPC ao lado" }).click();
+    await page.getByRole("button", { name: "Ver PPC" }).click();
     await expect.element(page.getByRole("article", { name: "PPC em revisão" })).toBeVisible();
     await page.getByRole("button", { name: /O AEE aparece como componente/ }).click();
     await page.getByRole("button", { name: "Conversar sobre esta pendência" }).click();

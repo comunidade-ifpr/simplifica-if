@@ -145,7 +145,9 @@ export function ListaConversas({
   if (conversas.length === 0) {
     return (
       <>
-        <p className="px-2 text-muted-foreground text-sm">Nenhuma conversa ainda.</p>
+        <p data-sem-conversas className="px-2 text-muted-foreground text-sm">
+          Nenhuma conversa ainda.
+        </p>
         {dialogo}
       </>
     );

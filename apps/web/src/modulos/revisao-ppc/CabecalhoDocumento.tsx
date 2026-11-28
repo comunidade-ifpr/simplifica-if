@@ -1,15 +1,15 @@
 /**
- * O cabeçalho do documento revisado: o nome do arquivo e o curso, "Abrir no Word" (regrava a cópia
- * comentada com a situação atual e a abre; com a revisão acompanhando um arquivo, abre esse), "Acompanhar
- * no Word" (a cópia comentada abre no Word, e cada salvamento é conferido; no desktop, a revisão também vira
- * a coluna da janela compacta, ao lado do Word, e o botão fica para voltar a ela) e o menu ⋯ com o resto: abrir o
- * PPC ao lado (o texto no painel do app, para consulta rápida, com a busca; o "Ver no PPC" de cada
- * pendência também o abre), mostrar na pasta, acompanhar outro arquivo, enviar a versão corrigida,
- * exportar as discordâncias, revisar outro arquivo e apagar esta revisão.
+ * O cabeçalho do documento revisado: o nome do arquivo e o curso, "Corrigir no Word" (abre a cópia comentada
+ * no Word e confere cada salvamento; no desktop, a revisão também vira a coluna da janela compacta, ao lado
+ * do Word, e o botão fica para voltar a ela), "Ver PPC" (o texto no painel do app, para consulta rápida, com
+ * a busca; o "Ver no PPC" de cada pendência também o abre) e o menu ⋯ com o resto: abrir cópia comentada
+ * (só gera/abre o `.docx` com comentários, sem entrar no modo acompanhado), mostrar na pasta, acompanhar
+ * outro arquivo, enviar a versão corrigida, exportar as discordâncias, revisar outro arquivo e apagar esta
+ * revisão.
  *
  * No navegador (sem o desktop), não há como abrir o Word: o botão grava a cópia e mostra onde ela está.
  */
-import { EllipsisIcon, EyeIcon, FileTextIcon } from "lucide-react";
+import { BookOpenIcon, EllipsisIcon, FileTextIcon } from "lucide-react";
 import { Button } from "../../components/ui/button.tsx";
 import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from "../../components/ui/menu.tsx";
 import { Spinner } from "../../components/ui/spinner.tsx";
@@ -53,23 +53,20 @@ export function CabecalhoDocumento({
         {curso === null ? null : <p className="text-muted-foreground text-small">{curso}</p>}
       </div>
       <div className="flex shrink-0 items-center gap-1">
-        <Button onClick={acoes.aoAbrirNoWord} disabled={acoes.abrindo}>
-          {acoes.abrindo ? <Spinner /> : <FileTextIcon />} Abrir no Word
+        <Button
+          onClick={acoes.aoAcompanhar ?? acoes.aoAbrirNoWord}
+          disabled={acoes.acompanhando || acoes.abrindo}
+          title={
+            acoes.acompanharAoLado
+              ? "Abre o documento no Word, confere de novo cada vez que você salvar e deixa a revisão numa coluna ao lado"
+              : "Abre a cópia comentada no Word e confere de novo cada vez que você salvar"
+          }
+        >
+          {acoes.acompanhando || acoes.abrindo ? <Spinner /> : <FileTextIcon />} Corrigir no Word
         </Button>
-        {acoes.aoAcompanhar === undefined ? null : (
-          <Button
-            variant="outline"
-            onClick={acoes.aoAcompanhar}
-            disabled={acoes.acompanhando}
-            title={
-              acoes.acompanharAoLado
-                ? "Abre o documento no Word, confere de novo cada vez que você salvar e deixa a revisão numa coluna ao lado"
-                : "Abre a cópia comentada no Word e confere de novo cada vez que você salvar"
-            }
-          >
-            {acoes.acompanhando ? <Spinner /> : <EyeIcon />} Acompanhar no Word
-          </Button>
-        )}
+        <Button variant="outline" onClick={acoes.aoAbrirAoLado} title="Abrir o PPC no painel ao lado">
+          <BookOpenIcon /> Ver PPC
+        </Button>
         <Menu>
           <MenuTrigger
             render={<Button variant="ghost" size="icon" aria-label="Mais ações do documento" title="Mais ações" />}
@@ -77,7 +74,9 @@ export function CabecalhoDocumento({
             <EllipsisIcon />
           </MenuTrigger>
           <MenuPopup>
-            <MenuItem onClick={acoes.aoAbrirAoLado}>Abrir o PPC ao lado</MenuItem>
+            <MenuItem disabled={acoes.abrindo} onClick={acoes.aoAbrirNoWord}>
+              Abrir cópia comentada
+            </MenuItem>
             {acoes.aoMostrarNaPasta === undefined ? null : (
               <MenuItem onClick={acoes.aoMostrarNaPasta}>Mostrar na pasta</MenuItem>
             )}

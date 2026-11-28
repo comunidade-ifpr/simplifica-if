@@ -34,8 +34,8 @@ it("Acompanhar no Word: o salvamento é conferido sem IA, e a lista mostra o que
   const aee = page.getByRole("button", { name: /O AEE aparece como componente/ });
   await expect.element(aee).toBeVisible();
 
-  // "Acompanhar no Word": a cópia comentada abre no Word, e a linha do acompanhamento aparece.
-  await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+  // "Corrigir no Word": a cópia comentada abre no Word, e a linha do acompanhamento aparece.
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
   const copiaDaRevisao =
     /\/PPC de teste - revisão prévia \(Simplifica IF\) \d{4}-\d{2}-\d{2} \d{2}h\d{2}( \(\d+\))?\.docx$/;
   await vi.waitFor(() => expect(abrirDocumento).toHaveBeenCalledWith(expect.stringMatching(copiaDaRevisao)));
@@ -46,7 +46,7 @@ it("Acompanhar no Word: o salvamento é conferido sem IA, e a lista mostra o que
   await expect.element(acompanhamento.getByText(/^Acompanhando “PPC de teste - revisão prévia/)).toBeVisible();
   await expect.element(acompanhamento.getByText("Salve no Word para conferir.")).toBeVisible();
   // Já acompanhando, o botão fica no cabeçalho, para voltar à coluna ao lado do Word.
-  await expect.element(page.getByRole("button", { name: "Acompanhar no Word" })).toBeVisible();
+  await expect.element(page.getByRole("button", { name: "Corrigir no Word" })).toBeVisible();
 
   // O Word salva a versão sem o AEE na matriz. Sem a volta à janela: quem vê o salvamento é o vigia do servidor
   // (o `fs.watch` da pasta, com a espera de 2 s).
@@ -61,9 +61,10 @@ it("Acompanhar no Word: o salvamento é conferido sem IA, e a lista mostra o que
   // O arquivo revisado continua o mesmo, no cabeçalho.
   await expect.element(page.getByText("PPC de teste.docx", { exact: true })).toBeVisible();
 
-  // "Abrir no Word" abre o arquivo acompanhado, sem gravar outra cópia.
+  // "Abrir cópia comentada" no ⋯ abre o arquivo acompanhado, sem gravar outra cópia.
   abrirDocumento.mockClear();
-  await page.getByRole("button", { name: "Abrir no Word" }).click();
+  await page.getByRole("button", { name: "Mais ações do documento" }).click();
+  await page.getByRole("menuitem", { name: "Abrir cópia comentada" }).click();
   await vi.waitFor(() => expect(abrirDocumento).toHaveBeenCalledWith(copia));
   expect(achadosDaTela()).toEqual([]);
 });

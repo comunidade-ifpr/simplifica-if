@@ -57,7 +57,7 @@ it("Acompanhar no Word: a coluna ao lado do Word, com a lista, o salvamento, a c
 
   // "Acompanhar no Word": a cópia comentada abre no Word, e a janela vira a coluna (o desktop encolhe a janela;
   // aqui, a página).
-  await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
   await vi.waitFor(() => expect(compacta).toHaveBeenCalledWith(true));
   expect(abrirDocumento).toHaveBeenCalledTimes(1);
   const copia = abrirDocumento.mock.calls[0]![0];
@@ -168,7 +168,7 @@ it("Acompanhar no Word: a coluna ao lado do Word, com a lista, o salvamento, a c
   await expect.element(page.getByRole("link", { name: "Explorar o IFPR" })).toBeVisible();
   // Já acompanhando, "Acompanhar no Word" abre o mesmo arquivo e volta à coluna, sem outra cópia.
   abrirDocumento.mockClear();
-  await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
   await vi.waitFor(() => expect(abrirDocumento).toHaveBeenCalledWith(copia));
   await vi.waitFor(() => expect(app.roteador.state.location.search).toMatchObject({ compacto: 1 }));
   await expect.element(page.getByText(/^Deixe o Word à esquerda: /)).not.toBeInTheDocument();
@@ -182,7 +182,7 @@ it("no compacto: a bandeja na moldura leva à conversa ao lado no painel, sem sa
   await using app = await montarApp(servidor, "/revisao-ppc");
   await page.getByRole("button", { name: "Escolher o PPC" }).click();
   await expect.element(page.getByText("PPC de teste.docx", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
   await vi.waitFor(() => expect(app.roteador.state.location.search).toMatchObject({ compacto: 1 }));
   await page.viewport(380, 760);
   const id = String(app.roteador.state.location.search.id);
@@ -243,7 +243,7 @@ it("ao entrar, o painel recolhe e o rascunho de outra conversa fica; a ficha do 
   const painel = page.getByRole("complementary", { name: "Painel ao lado" });
   await expect.element(painel).toBeVisible();
 
-  await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
   await vi.waitFor(() => expect(app.roteador.state.location.search).toMatchObject({ compacto: 1 }));
   await page.viewport(380, 760);
   // O painel que estava aberto recolheu: a lista fica à vista.
@@ -293,7 +293,7 @@ it("a janela que não sai da tela cheia: o modo não liga e avisa; Voltar no his
   await app.roteador.navigate({ to: "/revisao-ppc" });
   await page.getByRole("button", { name: "Escolher o PPC" }).click();
   await expect.element(page.getByText("PPC de teste.docx", { exact: true })).toBeVisible();
-  const acompanhar = page.getByRole("button", { name: "Acompanhar no Word" });
+  const acompanhar = page.getByRole("button", { name: "Corrigir no Word" });
 
   await acompanhar.click();
   await expect.element(page.getByRole("alert").getByText(/^A janela não virou a coluna/)).toBeVisible();

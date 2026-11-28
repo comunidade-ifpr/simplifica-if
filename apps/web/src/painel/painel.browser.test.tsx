@@ -229,11 +229,12 @@ it("o erro de uma tela fica na área dela: o cabeçalho e o painel continuam de 
   // "Tentar de novo" monta a tela outra vez.
   falha.ligada = false;
   await page.getByRole("button", { name: "Tentar de novo" }).click();
-  await expect.element(page.getByRole("heading", { level: 1, name: "Todas as tarefas" })).toBeVisible();
+  await expect.element(page.getByRole("heading", { level: 1, name: "Tarefas" })).toBeVisible();
 
-  // E ir para outra tela tira o erro (o Início também usa o catálogo).
+  // E ir para outra tela tira o erro.
   falha.ligada = true;
   await page.getByRole("link", { name: "Início", exact: true }).click();
+  await page.getByRole("link", { name: "Tarefas", exact: true }).click();
   await expect.element(aviso).toBeVisible();
   falha.ligada = false;
   await page.getByRole("link", { name: "Explorar o IFPR" }).click();

@@ -39,6 +39,7 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await using app = await montarApp(servidor);
 
   // O cartão da tarefa de módulo leva à entrada: a frase e a área de soltar, com o botão.
+  await page.getByRole("navigation", { name: "Telas" }).getByRole("link", { name: "Tarefas", exact: true }).click();
   await page.getByRole("link", { name: /^Revisar um PPC/ }).click();
   await expect.element(page.getByRole("heading", { name: "Revisar um PPC" })).toBeVisible();
   await expect.element(page.getByText("Confira seu PPC contra as normas antes de enviar à PROENS.")).toBeVisible();
@@ -107,9 +108,8 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await expect.element(busca).not.toBeInTheDocument();
   expect(CSS.highlights.has("busca")).toBe(false);
   await page.getByRole("button", { name: "Fechar o painel" }).click();
-  // "Abrir o PPC ao lado", no ⋯: o texto do PPC no painel, desde o começo.
-  await page.getByRole("button", { name: "Mais ações do documento" }).click();
-  await page.getByRole("menuitem", { name: "Abrir o PPC ao lado" }).click();
+  // "Ver PPC": o texto do PPC no painel, desde o começo.
+  await page.getByRole("button", { name: "Ver PPC" }).click();
   await expect
     .element(page.getByRole("article", { name: "PPC em revisão" }).getByRole("heading", { name: "PPC de teste.docx" }))
     .toBeVisible();
@@ -127,8 +127,9 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await userEvent.keyboard("f");
   await expect.element(page.getByText(/^0 de \d+ feitas?$/).first()).toBeInTheDocument();
 
-  // "Abrir no Word" regrava a cópia comentada e a abre; o ⋯ mostra na pasta.
-  await page.getByRole("button", { name: "Abrir no Word" }).click();
+  // "Abrir cópia comentada" no ⋯ regrava a cópia comentada e a abre; "Mostrar na pasta" a exibe.
+  await page.getByRole("button", { name: "Mais ações do documento" }).click();
+  await page.getByRole("menuitem", { name: "Abrir cópia comentada" }).click();
   // A cópia é desta revisão: o nome leva a data e a hora em que ela foi feita.
   const copiaDaRevisao = new RegExp(
     `^${servidor.pasta.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/PPC de teste - revisão prévia \\(Simplifica IF\\) \\d{4}-\\d{2}-\\d{2} \\d{2}h\\d{2}\\.docx$`,
@@ -157,8 +158,7 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await confirmacao.getByRole("button", { name: "Cancelar" }).click();
   await expect.element(confirmacao).not.toBeInTheDocument();
   // Com o PPC no painel, apagar o tira de lá também.
-  await page.getByRole("button", { name: "Mais ações do documento" }).click();
-  await page.getByRole("menuitem", { name: "Abrir o PPC ao lado" }).click();
+  await page.getByRole("button", { name: "Ver PPC" }).click();
   const painelLeitura = page.getByRole("complementary", { name: "Painel ao lado" });
   await expect.element(painelLeitura.getByRole("article", { name: "PPC em revisão" })).toBeVisible();
   await page.getByRole("button", { name: "Mais ações do documento" }).click();

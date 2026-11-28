@@ -1,5 +1,5 @@
 /**
- * A moldura das telas: o cabeçalho com o logo do app, a navegação (Início, Explorar), a busca na base
+ * A moldura das telas: o cabeçalho com o logo do app, a navegação (Início, Tarefas, Explorar o IFPR), a busca na base
  * (Ctrl/Cmd+K, a paleta do Explorar), o que está em andamento (`atividades/EmAndamento.tsx`), o estado da
  * conexão e, em ícones, a Ajuda e as Configurações; o
  * aviso de conexão; a tela da rota e, à direita dela, o painel do app (`painel/PainelDoApp.tsx`), que
@@ -28,7 +28,15 @@ import {
   useRouter,
   useRouterState,
 } from "@tanstack/react-router";
-import { CircleHelpIcon, Maximize2Icon, PinIcon, PinOffIcon, SearchIcon, SettingsIcon } from "lucide-react";
+import {
+  CircleHelpIcon,
+  Maximize2Icon,
+  PanelRightIcon,
+  PinIcon,
+  PinOffIcon,
+  SearchIcon,
+  SettingsIcon,
+} from "lucide-react";
 import { useEffect, useSyncExternalStore } from "react";
 import { AnunciosAtividades, EmAndamento } from "../atividades/EmAndamento.tsx";
 import { type BarraTitulo, useBarraTitulo } from "../barra-titulo.ts";
@@ -39,13 +47,13 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx"
 import { Button } from "../components/ui/button.tsx";
 import { DetalhesTecnicos } from "../components/AvisoErro.tsx";
 import { explicarErro } from "../conexao/erros.ts";
-import { useApi, useApp, useJanelaCompacta } from "../contexto.tsx";
+import { useApi, useApp, useJanelaCompacta, usePainel } from "../contexto.tsx";
 import { registrarErro, textoDoErro } from "../diagnostico.ts";
 import { ProvedorPaleta, usePaleta } from "../explorar/Paleta.tsx";
 import { ContextoMemoria, memoriaDa } from "../leitor/carga.ts";
 import logoEscuro from "../marca/logo-escuro.svg";
 import logo from "../marca/logo.svg";
-import { ariaAtalho, ATALHO_PALETA, eComando, eNovaJanela } from "../lib/teclado.ts";
+import { ariaAtalho, ATALHO_PAINEL, ATALHO_PALETA, eComando, eNovaJanela } from "../lib/teclado.ts";
 import { rotaParaGuardar } from "../continuidade/conferir.ts";
 import { abrirEmNovaJanela, useAbrirRota } from "../painel/abrirLink.ts";
 import { contextoParaConversar } from "../painel/conversar.ts";
@@ -110,7 +118,7 @@ function AvisoErroDaTela({ error, reset }: ErrorComponentProps) {
 
 // A aba em que se está vem grifada: o marca-texto na metade de baixo da palavra.
 const classeAba =
-  "rounded-xs px-1 font-semibold text-muted-foreground text-sm hover:text-foreground data-[status=active]:bg-[linear-gradient(to_top,var(--grifo)_45%,transparent_45%)] data-[status=active]:text-foreground";
+  "whitespace-nowrap rounded-xs px-1 font-semibold text-muted-foreground text-sm hover:text-foreground data-[status=active]:bg-[linear-gradient(to_top,var(--grifo)_45%,transparent_45%)] data-[status=active]:text-foreground";
 
 // As telas de apoio (Ajuda, Configurações) vão em ícone, à direita; a em que se está, com o grifo ao fundo.
 const classeIcone =
@@ -242,8 +250,9 @@ function AreaDaTela() {
   );
 }
 
-/** O cabeçalho do app: o logo, a navegação, a busca, o que está em andamento, a conexão, Ajuda e Configurações. */
+/** O cabeçalho do app: o logo, a navegação, a busca, o que está em andamento, a conexão, Ajuda, Configurações e o painel. */
 function CabecalhoCompleto({ barra }: { readonly barra: BarraTitulo | undefined }) {
+  const [painel, controlePainel] = usePainel();
   return (
     <header
       {...propsBarraTitulo(barra)}
@@ -262,8 +271,11 @@ function CabecalhoCompleto({ barra }: { readonly barra: BarraTitulo | undefined 
         <Link to="/" className={classeAba} activeOptions={{ exact: true }}>
           Início
         </Link>
+        <Link to="/tarefas" className={classeAba}>
+          Tarefas
+        </Link>
         <Link to="/explorar" className={classeAba}>
-          Explorar
+          Explorar o IFPR
         </Link>
       </nav>
       <BotaoBuscar />
@@ -276,6 +288,18 @@ function CabecalhoCompleto({ barra }: { readonly barra: BarraTitulo | undefined 
         <Link to="/configuracoes" className={classeIcone} aria-label="Configurações" title="Configurações">
           <SettingsIcon aria-hidden />
         </Link>
+        <button
+          type="button"
+          onClick={controlePainel.alternar}
+          data-status={painel.aberto ? "active" : undefined}
+          aria-pressed={painel.aberto}
+          aria-label="Painel ao lado"
+          aria-keyshortcuts={ariaAtalho(ATALHO_PAINEL)}
+          title={`Painel ao lado (${ATALHO_PAINEL})`}
+          className={classeIcone}
+        >
+          <PanelRightIcon aria-hidden />
+        </button>
       </div>
     </header>
   );

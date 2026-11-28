@@ -170,18 +170,20 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await page.viewport(1280, 860);
   await using _app = await montarApp(servidor);
 
-  // Início: a data da base, a caixa de pedido, os cartões (a tarefa de módulo e a de conversa) e os recentes.
+  // Início: a data da base, a caixa de pedido e as conversas recentes.
   await expect.element(page.getByText(/^Base de (desenvolvimento|\d{2}\/\d{2}\/\d{4})$/)).toBeVisible();
   await expect.element(page.getByRole("textbox", { name: "O que você precisa hoje?" })).toBeVisible();
-  const tarefas = page.getByRole("region", { name: "Tarefas" });
-  await expect.element(tarefas.getByRole("link", { name: /^Revisar um PPC/ })).toBeVisible();
-  const cartao = tarefas.getByRole("link", { name: /^Conferir a fundamentação normativa/ });
-  await expect.element(cartao).toBeVisible();
-  await expect.element(page.getByRole("heading", { name: "Recentes" })).toBeVisible();
-  // O botão provisório de antes não existe mais: só o cartão.
-  expect(document.querySelectorAll("a[href$='/revisao-ppc']").length).toBe(1);
+  await expect.element(page.getByRole("heading", { name: "Conversas recentes" })).toBeVisible();
   semIngles();
   await capturar("01-inicio");
+
+  // Tarefas: os cartões (a tarefa de módulo e a de conversa).
+  await page.getByRole("navigation", { name: "Telas" }).getByRole("link", { name: "Tarefas", exact: true }).click();
+  await expect.element(page.getByRole("link", { name: /^Revisar um PPC/ })).toBeVisible();
+  const cartao = page.getByRole("link", { name: /^Conferir a fundamentação normativa/ });
+  await expect.element(cartao).toBeVisible();
+  // O botão provisório de antes não existe mais: só o cartão.
+  expect(document.querySelectorAll("a[href$='/revisao-ppc']").length).toBe(1);
 
   // A tarefa: o formulário das entradas do manifesto, a frase do tempo e o pedido editável.
   await cartao.click();
@@ -554,10 +556,10 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   await app.roteador.navigate({ to: "/" });
   await expect.element(page.getByText("Coordenação de Curso · Campus Curitiba")).toBeVisible();
   await expect.element(page.getByText(/Não anexe/)).not.toBeInTheDocument();
-  const tarefas = page.getByRole("region", { name: "Tarefas" });
-  await expect.element(tarefas.getByRole("link", { name: /Revisar um PPC/ })).toBeVisible();
-  await expect.element(tarefas.getByRole("link", { name: /Conferir a fundamentação normativa/ })).toBeVisible();
   await capturar("15-inicio-com-perfil");
+  await page.getByRole("navigation", { name: "Telas" }).getByRole("link", { name: "Tarefas", exact: true }).click();
+  await expect.element(page.getByRole("link", { name: /Revisar um PPC/ })).toBeVisible();
+  await expect.element(page.getByRole("link", { name: /Conferir a fundamentação normativa/ })).toBeVisible();
 
   // Configurações › Seu perfil: o salvo, editar e apagar; "Rever as boas-vindas".
   await app.roteador.navigate({ to: "/configuracoes" });
@@ -995,7 +997,7 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
   };
   await page.viewport(1100, 760);
   {
-    await using _app = await montarApp(servidor);
+    await using _app = await montarApp(servidor, "/tarefas");
     await conferir();
     await capturar("cartao-revisar-ppc-largo");
     for (const largura of [800, 560, 360]) {
@@ -1003,11 +1005,6 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
       await conferir();
       await capturar(`cartao-revisar-ppc-${largura}`);
     }
-  }
-  {
-    await using _app = await montarApp(servidor, "/tarefas");
-    await conferir();
-    await capturar("cartao-revisar-ppc-todas-360");
   }
   // No desktop (o cabeçalho é a barra de título e não quebra linha), na largura mínima da janela: com os
   // semáforos à esquerda (macOS) e com os botões do sistema à direita (Windows e Linux). O cabeçalho mais
@@ -1034,7 +1031,8 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
     });
     for (const rota of ["/", "/tarefas"] as const) {
       await using _app = await montarApp(servidor, rota);
-      await conferir();
+      if (rota === "/tarefas") await conferir();
+      else await expect.element(page.getByRole("textbox", { name: "O que você precisa hoje?" })).toBeVisible();
       expect(cabecalho().scrollWidth).toBeLessThanOrEqual(cabecalho().clientWidth);
       await capturar(`cartao-revisar-ppc-${plataforma}-800${rota === "/" ? "" : "-todas"}`);
     }

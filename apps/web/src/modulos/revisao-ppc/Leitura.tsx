@@ -217,7 +217,7 @@ export function Leitura({
         />
         {naoCompactou ? (
           <p role="alert" className="text-small">
-            A janela não virou a coluna ao lado do Word: saia da tela cheia e clique em “Acompanhar no Word” de novo.
+            A janela não virou a coluna ao lado do Word: saia da tela cheia e clique em “Corrigir no Word” de novo.
           </p>
         ) : null}
         {estado.caminhoCopia === null ? null : (

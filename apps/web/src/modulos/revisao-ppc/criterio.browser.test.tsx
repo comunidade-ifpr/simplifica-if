@@ -150,7 +150,7 @@ it("Neste PPC: a pendência feita; Ir à pendência de outra tela, sem a revisã
   // Na coluna compacta, o painel que a cobre se fecha, e a linha da coluna fica aberta, com o foco.
   app.contexto.revisao.alternarPendencia(app.contexto.revisao.obter().aberta!);
   app.contexto.painel.fechar();
-  await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
   await vi.waitFor(() => expect(app.roteador.state.location.search).toMatchObject({ compacto: 1 }));
   await page.viewport(380, 760);
   app.contexto.painel.abrirLink(`ifpr://revisao-ppc/${lista}/criterio/CT-CURR-22`);

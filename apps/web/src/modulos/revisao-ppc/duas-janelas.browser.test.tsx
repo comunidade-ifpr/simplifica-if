@@ -32,7 +32,7 @@ it("duas janelas na mesma revisão acompanhada: o Feito de uma aparece na outra"
   await page.getByRole("button", { name: "Escolher o PPC" }).click();
   const aee = page.getByRole("button", { name: /O AEE aparece como componente/ });
   await expect.element(aee).toBeVisible();
-  await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
   await page.getByRole("button", { name: "Voltar ao app inteiro" }).click();
   await expect.element(page.getByRole("region", { name: "Acompanhamento no Word" })).toBeVisible();
   const lista = app.contexto.revisao.obter().lista;
@@ -80,12 +80,11 @@ it("a revisão apagada em outra janela: esta sai dela, com o aviso, e o PPC sai 
   await using app = await montarApp(servidor, "/revisao-ppc");
   await page.getByRole("button", { name: "Escolher o PPC" }).click();
   await expect.element(page.getByRole("button", { name: /O AEE aparece como componente/ })).toBeVisible();
-  await page.getByRole("button", { name: "Acompanhar no Word" }).click();
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
   await page.getByRole("button", { name: "Voltar ao app inteiro" }).click();
   await expect.element(page.getByRole("region", { name: "Acompanhamento no Word" })).toBeVisible();
   const lista = app.contexto.revisao.obter().lista!.id;
-  await page.getByRole("button", { name: "Mais ações do documento" }).click();
-  await page.getByRole("menuitem", { name: "Abrir o PPC ao lado" }).click();
+  await page.getByRole("button", { name: "Ver PPC" }).click();
   await expect.element(page.getByRole("article", { name: "PPC em revisão" })).toBeVisible();
 
   const segunda = await inicializar(

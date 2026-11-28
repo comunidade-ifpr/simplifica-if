@@ -1,10 +1,9 @@
 /**
  * Início do Modo Servidor (M1.9): a linha do perfil ("Função · Campus", M1.8) e a data da base, a pergunta
- * "O que você precisa hoje?" com a caixa de pedido (`CaixaPedido`, com anexo e a escolha da IA), as tarefas que servem ao perfil
- * (do catálogo do servidor, as que rodam no app antes das que abrem um link), "Ver todas", "Continuar de onde parou"
- * (o que roda, o que terminou sem ser visto, o que ficou aberto no painel e a última revisão de PPC) e as
- * conversas recentes. No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às boas-vindas; ao
- * reabrir o app, espera a continuidade decidir para onde voltar, sem piscar.
+ * "O que você precisa hoje?" com a caixa de pedido (`CaixaPedido`, com anexo e a escolha da IA),
+ * "Continuar de onde parou" (o que roda, o que terminou sem ser visto, o que ficou aberto no painel e a
+ * última revisão de PPC) e as conversas recentes. No primeiro uso (aviso não aceito ou boas-vindas por ver),
+ * leva às boas-vindas; ao reabrir o app, espera a continuidade decidir para onde voltar, sem piscar.
  *
  * As novidades da base aparecem no aviso "Base atualizada" (`configuracoes/AvisoBaseAtualizada.tsx`),
  * logo abaixo da data da base, depois que uma versão nova entra.
@@ -12,7 +11,7 @@
  * A IA (instalar, entrar) fica em Configurações › Sua IA; aqui, só o aviso quando nenhuma está pronta.
  */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { CircleCheckIcon } from "lucide-react";
+import { CircleCheckIcon, CompassIcon, ListChecksIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { CaixaPedido } from "../components/CaixaPedido.tsx";
@@ -20,17 +19,14 @@ import { AvisoBaseAtualizada } from "../configuracoes/AvisoBaseAtualizada.tsx";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { buttonVariants } from "../components/ui/button.tsx";
-import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useApp, useContinuidade, useEstadoConexao } from "../contexto.tsx";
 import { ContinuarDeOndeParou } from "../continuidade/ContinuarDeOndeParou.tsx";
 import { detectarIa } from "../deteccao.ts";
 import { PROVIDERS } from "../providers.ts";
-import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
-import { tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts";
 import { Anexos, comecarTarefa, EscolhaIa, useAnexos } from "../tarefas/comecar.tsx";
 import type { EscolhaDaIa } from "../tarefas/modelos.ts";
-import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
+import { linhaDoPerfil, primeiroUsoPendente, usePreferencias } from "../tarefas/perfil.ts";
 import { tituloDoPedido } from "../tarefas/textos.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
 import { classeColuna } from "../components/Pagina.tsx";
@@ -42,9 +38,6 @@ import { UltimaRevisao } from "../modulos/revisao-ppc/UltimaRevisao.tsx";
 export const Route = createFileRoute("/")({
   component: Inicio,
 });
-
-/** Quantos cartões o Início mostra antes de "Ver todas". */
-const CARTOES_NO_INICIO = 4;
 
 function DataDaBase() {
   const api = useApi();
@@ -147,34 +140,22 @@ function PedidoDoInicio() {
   );
 }
 
-function Tarefas() {
-  const catalogo = useCatalogo();
-  const perfil = usePerfil();
-  if (catalogo.fase === "falhou") return <AvisoErro erro={catalogo.erro} />;
-  const tarefas = tarefasDoInicio(catalogo.fase === "pronto" ? catalogo.tarefas : [], perfil);
+/** Atalhos exibidos abaixo da caixa de pedido quando ainda não há trabalho em aberto nem conversas. */
+function AtalhosDoInicio() {
+  const classeChip =
+    "inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 font-medium text-foreground transition-colors hover:border-input hover:bg-muted";
   return (
-    <section aria-labelledby="titulo-tarefas" className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 id="titulo-tarefas" className="text-title">
-          Tarefas
-        </h2>
-        <Link to="/tarefas" className="link-grifo text-small">
-          Ver todas
-        </Link>
-      </div>
-      <ul className="-mx-3.5 grid gap-x-6 gap-y-1 sm:grid-cols-2">
-        {tarefas.slice(0, CARTOES_NO_INICIO).map((tarefa) => (
-          <li key={tarefa.id}>
-            <CartaoTarefa tarefa={tarefa} />
-          </li>
-        ))}
-      </ul>
-      {catalogo.fase === "carregando" ? (
-        <p className="flex items-center gap-2 text-muted-foreground text-sm">
-          <Spinner size="sm" /> Carregando as tarefas…
-        </p>
-      ) : null}
-    </section>
+    <div data-atalhos-inicio className="hidden flex-wrap items-center gap-2 text-small">
+      <span className="text-muted-foreground">Ou comece por:</span>
+      <Link to="/tarefas" className={classeChip}>
+        <ListChecksIcon aria-hidden className="size-3.5 text-muted-foreground" />
+        Tarefas
+      </Link>
+      <Link to="/explorar" className={classeChip}>
+        <CompassIcon aria-hidden className="size-3.5 text-muted-foreground" />
+        Explorar o IFPR
+      </Link>
+    </div>
   );
 }
 
@@ -193,7 +174,12 @@ function Inicio() {
   return (
     <div className="h-full overflow-y-auto">
       {/* Uma coluna só, centrada: a pergunta em letras grandes e a caixa de pedido, que é o centro da tela. */}
-      <div className={cn(classeColuna("estreita"), "flex flex-col gap-10 pt-14 pb-12")}>
+      <div
+        className={cn(
+          classeColuna("estreita"),
+          "flex flex-col gap-10 pt-14 pb-12 [&:has([data-sem-conversas]):not(:has([data-continuar]))_[data-atalhos-inicio]]:flex",
+        )}
+      >
         <div className="flex flex-col gap-6">
           <section className="space-y-3">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-small">
@@ -212,18 +198,20 @@ function Inicio() {
             <>
               <AvisoBaseAtualizada />
               <AvisoSemIa />
-              <PedidoDoInicio />
+              <div className="flex flex-col gap-3">
+                <PedidoDoInicio />
+                <AtalhosDoInicio />
+              </div>
             </>
           )}
         </div>
         {conexao.fase === "sem-servidor" ? null : (
           <>
-            <Tarefas />
             {/* Composição: a última revisão de PPC, do módulo `revisao-ppc`. */}
             <ContinuarDeOndeParou extras={<UltimaRevisao />} />
             <section aria-labelledby="titulo-recentes" className="flex flex-col gap-2">
               <h2 id="titulo-recentes" className="text-title">
-                Recentes
+                Conversas recentes
               </h2>
               <ListaConversas limite={5} />
             </section>

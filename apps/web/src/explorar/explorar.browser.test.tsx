@@ -33,7 +33,7 @@ it("paleta: uma citação vai direto ao dispositivo destacado na norma", async (
   await using app = await montarApp(servidor, "/explorar");
   await expect.element(page.getByRole("heading", { level: 1, name: "Explorar o IFPR" })).toBeVisible();
   await expect
-    .element(page.getByRole("link", { name: "Explorar", exact: true }))
+    .element(page.getByRole("link", { name: "Explorar o IFPR", exact: true }))
     .toHaveAttribute("data-status", "active");
   semIngles();
 

@@ -21,7 +21,7 @@ function TodasAsTarefas() {
   for (const tarefa of tarefas) porArea.set(tarefa.area, [...(porArea.get(tarefa.area) ?? []), tarefa]);
   return (
     <Pagina largura="larga">
-      <h1 className="text-display">Todas as tarefas</h1>
+      <h1 className="text-display">Tarefas</h1>
       {catalogo.fase === "falhou" ? <AvisoErro erro={catalogo.erro} /> : null}
       {catalogo.fase === "carregando" ? (
         <p className="flex items-center gap-2 text-muted-foreground text-sm">
